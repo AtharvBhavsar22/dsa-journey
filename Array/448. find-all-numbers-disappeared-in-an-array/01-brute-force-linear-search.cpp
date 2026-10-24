@@ -1,3 +1,8 @@
+#include <iostream>
+#include <vector>
+#include <algorithm>
+using namespace std;
+
 class Solution {
 public:
     vector<int> findDisappearedNumbers(vector<int>& nums) {
@@ -6,8 +11,10 @@ public:
 
         vector<int> ans;
 
+        // Check every number from 1 to n
         for (int i = 1; i <= n; i++) {
 
+            // Search for the current number in the array
             if (find(begin(nums), end(nums), i) == end(nums)) {
                 ans.push_back(i);
             }
@@ -16,3 +23,20 @@ public:
         return ans;
     }
 };
+
+int main() {
+
+    Solution sol;
+
+    vector<int> nums = {4, 3, 2, 7, 8, 2, 3, 1};
+
+    vector<int> ans = sol.findDisappearedNumbers(nums);
+
+    cout << "Missing Numbers: ";
+
+    for (int num : ans) {
+        cout << num << " ";
+    }
+
+    return 0;
+}
