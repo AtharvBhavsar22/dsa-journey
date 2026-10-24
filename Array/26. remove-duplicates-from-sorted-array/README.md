@@ -1,80 +1,173 @@
-# 26. Remove Duplicates from Sorted Array
+Explored multiple approaches, from brute force to optimized solutions, along with alternative LeetCode solutions.
 
-Given a sorted integer array `nums`, remove the duplicates in-place so that each unique value appears once. Return `k`, the number of unique values. The first `k` elements of `nums` must contain the unique values in sorted order.
+Kept everything short and simple. Have a look, learn along, and give it a try yourself!
 
-The examples use `nums = {0, 0, 1, 1, 1, 2, 2, 3, 3, 4}`. Each C++ file is a standalone program with its own `main()`.
+## 01. Brute Force — Nested Loop Shifting
 
-## 1. Brute Force — Nested Loop Shifting
+**Approach:**
 
-Whenever adjacent elements are equal, shift all later values one position to the left, decrease the logical size, and check the same index again.
+First, we take `n` to store the size of the array. Then, using the first `for` loop, we traverse the sorted array and check whether `nums[i]` is equal to `nums[i + 1]`. If both elements are equal, it means that a duplicate element is found.
 
-**Output**
+If a duplicate is found, we use another `for` loop with `j`, starting from `i + 1`. We take the next element `nums[j + 1]` and place it at the current position `nums[j]`. We continue shifting the remaining elements one position to the left until we reach the second-last element.
 
-```text
-Unique elements: 5
-Array: 0 1 2 3 4
+After shifting, we decrease `n` by 1 because one duplicate element has been logically removed from the array.
+
+Then, we decrease `i` by 1 so that when the outer loop increments it again, we check the same index. This is necessary because after shifting, another duplicate element may have come into that position.
+
+We continue this process until the entire array has been traversed and return `n`, which represents the number of remaining unique elements in the array.
+
+## Code:
+
+```cpp
+class Solution {
+public:
+    int removeDuplicates(vector<int>& nums) {
+        int n = nums.size();
+
+        for (int i = 0; i < n - 1; i++) {
+
+            if (nums[i] == nums[i + 1]) {
+
+                // Shift remaining elements to the left
+                for (int j = i + 1; j < n - 1; j++) {
+                    nums[j] = nums[j + 1];
+                }
+
+                // Decrease logical size and check this index again
+                n--;
+                i--;
+            }
+        }
+
+        return n;
+    }
+};
 ```
 
-- **Time:** `O(n^2)`
-- **Auxiliary space:** `O(1)`
-- **Code:** [01. brute-force-nested-loop-shifting.cpp](./01.%20brute-force-nested-loop-shifting.cpp)
+**Time Complexity:** `O(n²)`
 
-## 2. Two Pointers — Overwriting
+**Space Complexity:** `O(1)`
 
-Pointer `i` tracks the last unique element. Pointer `j` scans the sorted array; when it finds a different value, copy it into the next unique position. Return `i + 1`. This implementation also returns `0` for an empty vector.
+---
 
-**Output**
+## 02. Two Pointers — Overwriting
 
-```text
-Unique elements: 5
-Array: 0 1 2 3 4
+**Approach:**
+
+First, we take `n` to store the size of the array and initialize `i` to track the position of the last unique element. Then, using the `for` loop with `j`, we traverse the sorted array and compare `nums[i]` with `nums[j]`.
+
+If both elements are different, it means a new unique element is found. We place this element at `nums[i + 1]` and increment `i` to move to the next unique position.
+
+We continue this process until the entire array has been traversed and return `i + 1`, which represents the number of unique elements in the array.
+
+## Code:
+
+```cpp
+class Solution {
+public:
+    int removeDuplicates(vector<int>& nums) {
+        int n = nums.size();
+        int i = 0;
+
+        for (int j = 1; j < n; j++) {
+
+            if (nums[i] != nums[j]) {
+
+                // Place the next unique element
+                nums[i + 1] = nums[j];
+
+                // Move to the next unique position
+                i++;
+            }
+        }
+
+        return i + 1;
+    }
+};
 ```
 
-- **Time:** `O(n)`
-- **Auxiliary space:** `O(1)`
-- **Code:** [02. two-pointers-overwriting.cpp](./02.%20two-pointers-overwriting.cpp)
+**Time Complexity:** `O(n)`
 
-## 3. Two Pointers — Swapping
+**Space Complexity:** `O(1)`
 
-Pointer `i` tracks the last unique position and `j` scans for a different value. Swap each newly found unique value into the next position. This preserves the sorted unique prefix.
+---
 
-**Output**
+## 03. Two Pointers — Swapping
 
-```text
-Unique elements: 5
-Array: 0 1 2 3 4
+**Approach:**
+
+First, we take `n` to store the size of the array and initialize `i` to track the position of the last unique element. Then, using the `for` loop with `j`, we traverse the sorted array and compare `nums[i]` with `nums[j]`.
+
+If both elements are different, it means a new unique element is found. We use `swap()` to place `nums[j]` at `nums[i + 1]` and move the element at that position to `nums[j]`. Then, we increment `i` to move to the next unique position.
+
+We continue this process until the entire array has been traversed and return `i + 1`, which represents the number of unique elements in the array.
+
+```cpp
+class Solution {
+public:
+    int removeDuplicates(vector<int>& nums) {
+        int n = nums.size();
+        int i = 0;
+
+        for (int j = 1; j < n; j++) {
+
+            if (nums[i] != nums[j]) {
+
+                // Swap the next unique element into its correct position
+                swap(nums[i + 1], nums[j]);
+
+                // Move to the next unique position
+                i++;
+            }
+        }
+
+        return i + 1;
+    }
+};
 ```
 
-- **Time:** `O(n)`
-- **Auxiliary space:** `O(1)`
-- **Code:** [03. two-pointers-swapping.cpp](./03.%20two-pointers-swapping.cpp)
+**Time Complexity:** `O(n)`
 
-## 4. Extra Array — Store Unique Elements
+**Space Complexity:** `O(1)`
 
-Store the first value, then append each value that differs from its predecessor. Copy the resulting unique values back into `nums` and return their count.
+---
 
-**Output**
+## 05. STL — `unique()`
 
-```text
-Unique elements: 5
-Array: 0 1 2 3 4
+**Approach:**
+
+First, we use `unique()` from the `<algorithm>` library and pass `nums.begin()` and `nums.end()` to it. Here, `nums.begin()` points to the first element of the array, and `nums.end()` points to the position after the last element.
+
+The `unique()` function compares consecutive elements and moves the unique elements to the beginning of the array by overwriting duplicates. It returns an iterator `newEnd` pointing to the position immediately after the last unique element.
+
+Then, we subtract `nums.begin()` from `newEnd` to calculate the number of unique elements. Since both are iterators, their subtraction gives the distance between them, which represents the count of unique elements.
+
+Finally, we return this count. The original vector size remains unchanged because `unique()` only rearranges the elements and does not physically remove them.
+
+
+**Code:**
+
+```cpp
+class Solution {
+public:
+    int removeDuplicates(vector<int>& nums) {
+
+        // Move consecutive duplicates to the end
+        auto newEnd = unique(nums.begin(), nums.end());
+
+        // Return the number of unique elements
+        return newEnd - nums.begin();
+    }
+};
 ```
 
-- **Time:** `O(n)`
-- **Auxiliary space:** `O(n)`
-- **Code:** [04. extra-array-store-unique-elements.cpp](./04.%20extra-array-store-unique-elements.cpp)
+**Time Complexity:** `O(n)`
 
-## 5. STL — `unique()`
+**Space Complexity:** `O(1)`
 
-`std::unique()` moves consecutive duplicates to the end of the range and returns an iterator to the end of the unique prefix. Subtract `nums.begin()` to get the number of unique elements. The vector is not resized; only its first `k` elements are relevant.
+---
+Thank you for taking the time to read this. Hope you find it helpful and enjoy exploring the approaches. ❤️
 
-**Output**
+If you found it helpful, please <b>⬆️ upvote and leave a comment!</b> 💬
 
-```text
-Unique elements: 5
-Array: 0 1 2 3 4
-```
-
-- **Time:** `O(n)`
-- **Auxiliary space:** `O(1)`
-- **Code:** [05. stl-unique.cpp](./05.%20stl-unique.cpp)
+  <img src="https://assets.leetcode.com/users/images/87599497-3f81-4882-bf7d-e4e46aab593a_1683459516.4004748.jpeg">
