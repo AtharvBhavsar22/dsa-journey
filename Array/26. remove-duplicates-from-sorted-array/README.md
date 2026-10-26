@@ -1,3 +1,11 @@
+# 26. Remove Duplicates from Sorted Array
+
+**LeetCode Problem:** [Remove Duplicates from Sorted Array](https://leetcode.com/problems/remove-duplicates-from-sorted-array/)
+
+**Difficulty:** Easy
+
+**Topics:** Array, Two Pointers
+
 Explored multiple approaches, from brute force to optimized solutions, along with alternative LeetCode solutions.
 
 Kept everything short and simple. Have a look, learn along, and give it a try yourself!
