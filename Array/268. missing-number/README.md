@@ -535,30 +535,6 @@ public:
 **Auxiliary Space Complexity:** `O(1)`
 
 ---
-## Understand the Pattern
-
-
-The problem asks us to find the only missing number from an array containing `n` distinct numbers in the range `[0, n]`.
-
-**Complete Range:** Since the array contains `n` numbers, the complete range contains `n + 1` numbers, from `0` to `n`. Exactly one number is missing.
-
-- **Brute Force:** Checks every number in the complete range against the array to find which number is missing.
-- **Sorting:** Sorts the array and compares its elements with the complete range to identify the missing number.
-- **Vector Marking:** Uses an auxiliary vector to mark the numbers present in the array. The index that remains unmarked represents the missing number.
-- **Mathematical Formula:** Calculates the expected sum of the complete range and subtracts the actual sum of the array to find the missing number.
-- **XOR:** Uses bitwise cancellation to eliminate numbers that appear in both the complete range and the array, leaving only the missing number.
-
-**Why XOR?** 
-
-We need to find the missing number without sorting or using an auxiliary data structure. XOR cancels matching numbers using `a ^ a = 0`, leaving the missing number. Therefore, it provides an efficient solution with O(n) time complexity and O(1) auxiliary space.
-
-**Pattern:** Missing Number → Complete Range → XOR Cancellation
-
-**Preferred Approach = XOR**
-
-Uses bitwise cancellation to identify the missing number in O(n) time and O(1) auxiliary space.
-
----
 
 Thank you for taking the time to read this. Hope you find it helpful and enjoy exploring the approaches. ❤️
 
