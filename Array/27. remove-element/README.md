@@ -279,27 +279,6 @@ public:
 
 - Time Complexity: `O(n)`
 - Auxiliary Space: `O(1)`
----
-## Understand the Pattern
-
-The problem asks us to remove all occurrences of `val` from the array in-place and return the number of remaining valid elements.
-
-**In-place Modification:** A technique that modifies the original array without creating an additional array.
-
-- **Nested Loop Shifting:** Shifts remaining elements to the left whenever `val` is found.
-- **Marking and Sorting:** Marks valid elements, sorts the array to bring them together, and restores their original values.
-- **Two Pointers — Overwriting:** Copies valid elements toward the beginning while maintaining their original order.
-- **Two Pointers — Swapping:** Places valid elements at the beginning by swapping them with elements at the next valid positions.
-- **Replace with Last Element:** Replaces unwanted elements with the last unchecked element when order does not matter.
-- **STL `remove()`:** Moves valid elements toward the beginning and returns an iterator representing the new logical end.
-
-**Why Two Pointers?** We need to place valid elements at the beginning while modifying the original array. Two Pointers allows us to skip unwanted elements and efficiently place valid elements without additional storage.
-
-**Pattern:** In-place Array Modification → Element Filtering → Two Pointers
-
-**Preferred Approach = Two Pointers — Overwrite / In-place Copying**
-
-Uses two pointers to place valid elements at the beginning while preserving their order, with O(n) time complexity and O(1) auxiliary space.
 
 ---
 Thank you for taking the time to read this. Hope you find it helpful and enjoy exploring the approaches. ❤️
