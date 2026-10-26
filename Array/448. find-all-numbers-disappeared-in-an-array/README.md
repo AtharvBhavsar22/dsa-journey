@@ -8,6 +8,8 @@ Explored multiple approaches, from brute force to optimized solutions, along wit
 
 Kept everything short and simple. Have a look, learn along, and give it a try yourself!
 
+
+
 ## 1. Brute Force (Linear Search)
 
 **Approach:**
