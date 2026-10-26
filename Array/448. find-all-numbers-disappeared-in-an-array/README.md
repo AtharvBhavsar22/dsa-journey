@@ -44,41 +44,7 @@ public:
 
 ---
 
-## 2. Brute Force (Range Vector + Linear Search)
-
-**Approach:** Create a separate vector containing all numbers from `1` to `n`. Check each number in the range vector using linear search in the original array. If it is not found, add it to the answer.
-
-**Code:**
-```cpp
-class Solution {
-public:
-    vector<int> findDisappearedNumbers(vector<int>& nums) {
-        int n = nums.size();
-        vector<int> notSeen;
-        vector<int> range;
-
-        for (int i = 1; i <= n; i++) {
-            range.push_back(i);
-        }
-
-        for (int i = 0; i < n; i++) {
-            if (find(nums.begin(), nums.end(), range[i]) == nums.end()) {
-                notSeen.push_back(range[i]);
-            }
-        }
-
-        return notSeen;
-    }
-};
-```
-
-**Time Complexity:** O(n²)
-
-**Space Complexity:** O(n), excluding the answer vector.
-
----
-
-## 3. Sorting + Binary Search
+## 2. Sorting + Binary Search
 
 
 **Binary Search:**
@@ -120,7 +86,7 @@ public:
 
 ---
 
-## Approach 4: Unordered Set (Presence Tracking)
+## 3. Unordered Set (Presence Tracking)
 
 
 
@@ -161,7 +127,7 @@ public:
 **Space Complexity:** O(n), excluding the answer vector.
 
 ---
-## 5. Cyclic Sort / Index Placement
+## 4. Cyclic Sort / Index Placement
 
 ### **Approach:**
 
@@ -304,7 +270,7 @@ public:
 
 ---
 
-## Approach 6: Negative Marking (Index Marking)
+## 6. Negative Marking (Index Marking)
 
 ### **Approach:**
 
