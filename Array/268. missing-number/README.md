@@ -1,3 +1,10 @@
+# 268. Missing Number
+
+**LeetCode Problem:** [Missing Number](https://leetcode.com/problems/missing-number/)  
+**Difficulty:** Easy  
+**Topics:** Array, Hash Table, Math, Binary Search, Bit Manipulation, Sorting
+
+
 Explored multiple approaches, from brute force to optimized solutions, along with alternative LeetCode solutions.
 
 Kept everything short and simple. Have a look, learn along, and give it a try yourself!
