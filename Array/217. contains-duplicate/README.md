@@ -197,23 +197,6 @@ public:
 **Space Complexity:** `O(n)`
 
 ---
-## Understand the Pattern
-
-The problem asks us to detect whether any element appears more than once.
-
-**Hashing:** A technique that uses a hash function to organize data and perform fast average-case lookup, insertion, and deletion.
-- **Hash Set:** Stores unique elements. If an element already exists in the set, we have found a duplicate. Average lookup and insertion take O(1).
-- **Hash Map:** Stores key-value pairs. We can use the element as a key and its frequency as the value to track how many times it appears. Average lookup and insertion take O(1).
-
-**Why Hash Set?** We only need to check whether an element exists, not count its occurrences. Therefore, a Hash Set is the most suitable choice.
-
-**Pattern:** Duplicate Detection → Hashing → Hash Set 
-
-**Preferred Approach = Unordered Set** 
-
-Uses hashing for fast duplicate checking, with average O(n) time complexity and O(n) space.
-
----
 
 Thank you for taking the time to read this. Hope you find it helpful and enjoy exploring the approaches. ❤️
 
