@@ -1,3 +1,9 @@
+# 448. Find All Numbers Disappeared in an Array
+
+**LeetCode Problem:** [Find All Numbers Disappeared in an Array](https://leetcode.com/problems/find-all-numbers-disappeared-in-an-array/)  
+**Difficulty:** Easy  
+**Topics:** Array, Hash Table
+
 Explored multiple approaches, from brute force to optimized solutions, along with alternative LeetCode solutions.
 
 Kept everything short and simple. Have a look, learn along, and give it a try yourself!
