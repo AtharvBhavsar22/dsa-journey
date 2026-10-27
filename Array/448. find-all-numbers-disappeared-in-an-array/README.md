@@ -395,29 +395,6 @@ public:
 **Space Complexity:** O(1), excluding the answer vector.
 
 ---
-## **Understand the Pattern**
-
-The problem asks us to find all numbers from `1` to `n` that are missing from the given array.
-
-**Index Placement:** A technique that uses the relationship between array indexes and numbers to identify missing elements.
-
-- **Cyclic Sort / Index Placement:** Places each number `c` at its correct index `c - 1`. After placement, if `nums[i] != i + 1`, the number `i + 1` is missing.
-- **Negative Marking:** Uses the index `c - 1` to mark the presence of number `c` by making the corresponding element negative. After marking, positive elements indicate missing numbers.
-- **Hash Set:** Stores the numbers present in the array. By checking each number from `1` to `n`, we can identify which numbers are missing.
-
-### **Why Index Placement?**
-
-The array contains numbers from `1` to `n`, and each number has a corresponding index `c - 1`.
-
-By placing each number at its correct index, we can identify missing numbers by checking whether the expected number is present at each index.
-
-**Missing Number Detection** → Index Mapping → Cyclic Sort / Index Placement
-
-### **Preferred Approach = Negative Marking**
-
-Uses the array indexes to mark the numbers that are present. After marking, positive elements indicate missing numbers, with `O(n)` time complexity and `O(1)` auxiliary space, excluding the answer vector.
-
----
 
 Thank you for taking the time to read this. Hope you find it helpful and enjoy exploring the approaches. ❤️
 
