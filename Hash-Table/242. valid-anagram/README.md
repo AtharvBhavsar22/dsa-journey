@@ -1,23 +1,495 @@
-# 242. Valid Anagram
+Explored multiple approaches, from brute force to optimized solutions, along with alternative LeetCode solutions.
 
-**LeetCode Problem:** [Valid Anagram](https://leetcode.com/problems/valid-anagram/)  
-**Difficulty:** Easy  
-**Topics:** Hash Table, String, Sorting
+Kept everything short and simple. Have a look, learn along, and give it a try yourself!
 
-These solutions check whether two strings contain the same characters with the same frequencies.
 
-## Approaches
 
-| File | Approach | Time | Extra space | Character support |
-|---|---|---:|---:|---|
-| [01. sorting.cpp](./01.%20sorting.cpp) | Sort both strings and compare | `O(n log n)` | `O(n)` for the copied strings | Characters supported by `string` |
-| [02. two-hash-maps.cpp](./02.%20two-hash-maps.cpp) | Count each string separately | `O(n)` average | `O(k)` | Lowercase English letters |
-| [03. single-hash-map-two-loops.cpp](./03.%20single-hash-map-two-loops.cpp) | Add counts, then subtract counts | `O(n)` average | `O(k)` | Characters supported by `char` |
-| [04. single-hash-map-one-loop.cpp](./04.%20single-hash-map-one-loop.cpp) | Add and subtract counts in one traversal | `O(n)` average | `O(k)` | Characters supported by `char` |
-| [05. single-frequency-array.cpp](./05.%20single-frequency-array.cpp) | Count with one 26-element array | `O(n)` | `O(1)` | Lowercase English letters |
-| [06. two-frequency-arrays.cpp](./06.%20two-frequency-arrays.cpp) | Count with one array per string | `O(n)` | `O(1)` | Lowercase English letters |
-| [07. byte-frequency-array.cpp](./07.%20byte-frequency-array.cpp) | Count byte values with one 256-element array | `O(n)` | `O(1)` | 8-bit byte values |
 
-Here, `n` is the input string length and `k` is the number of distinct characters encountered. The hash-map approaches have average-case `O(n)` time.
+## 1. Sorting — Sort Both Strings and Compare
 
-The lowercase-only approaches assume every character is in the range `'a'` through `'z'`. The byte-array approach treats each `char` as an unsigned byte; it does not count Unicode code points.
+**Approach:** Sort both strings in ascending order using `sort(s.begin(), s.end())` and `sort(t.begin(), t.end())`. 
+
+If the strings are anagrams, sorting places the same characters in the same order in both strings. 
+
+Finally, compare the sorted strings using `s == t`. If they are equal, return `true`; otherwise, return `false`.
+
+```cpp
+class Solution {
+public:
+    bool isAnagram(string s, string t) {
+
+        // Step 2: Sort both strings
+        sort(s.begin(), s.end());
+        sort(t.begin(), t.end());
+
+        // Step 3: Compare the sorted strings
+        return s == t;
+    }
+};
+```
+
+**Time Complexity:** `O(n log n + m log m)` 
+
+**Space Complexity:** `O(n + m)` 
+
+---
+## 2. Hashing — Two Hash Maps for Character Frequency Counting
+
+**Approach:** Create two `unordered_map` objects to store the frequency of each character in strings `s` and `t`. 
+
+Traverse both strings and increment the frequency of each character. Then compare the frequencies of all lowercase English letters from `'a'` to `'z'`. 
+
+If any frequency differs, return `false`; otherwise, return `true`.
+
+```cpp
+class Solution {
+public:
+    bool isAnagram(string s, string t) {
+
+        // Step 1: Create two maps
+        unordered_map<char, int> mapS;
+        unordered_map<char, int> mapT;
+
+        // Step 2: Count characters in s
+        for (int i = 0; i < s.length(); i++) {
+            mapS[s[i]]++;
+        }
+
+        // Step 3: Count characters in t
+        for (int i = 0; i < t.length(); i++) {
+            mapT[t[i]]++;
+        }
+
+        // Step 4: Compare character frequencies
+        for (char c = 'a'; c <= 'z'; c++) {
+            if (mapS[c] != mapT[c]) {
+                return false;
+            }
+        }
+
+        // Step 5: All frequencies match
+        return true;
+    }
+};
+```
+
+**Time Complexity:** `O(n + m)`
+
+**Space Complexity:** `O(1)`
+
+---
+
+## 3. Hashing — Single Hash Map with Frequency Increment and Decrement
+
+**Approach:** Create a single `unordered_map` to store the frequency of each character in string `s`. 
+
+Traverse `s` and increment each character's count. Then traverse `t` and decrement the count of each character. 
+
+Finally, iterate through the map and check whether every frequency is zero. 
+
+If any count is non-zero, return `false`; otherwise, return `true`.
+
+```cpp
+class Solution {
+public:
+    bool isAnagram(string s, string t) {
+
+        // Step 1: Create one map
+        unordered_map<char, int> freq;
+
+        // Step 2: Count characters in s
+        for (int i = 0; i < s.length(); i++) {
+            freq[s[i]]++;
+        }
+
+        // Step 3: Decrease counts using t
+        for (int i = 0; i < t.length(); i++) {
+            freq[t[i]]--;
+        }
+
+        // Step 4: Check whether every count is zero
+        for (auto it = freq.begin(); it != freq.end(); it++) {
+            if (it->second != 0) {
+                return false;
+            }
+        }
+
+        // Step 5: All counts are zero
+        return true;
+    }
+};
+```
+
+**Time Complexity:** `O(n + m)`
+
+**Space Complexity:** `O(1)`
+
+---
+
+## 4. Hashing — Single Hash Map with Combined Frequency Counting
+
+**Approach:** Create a single `unordered_map` to track character frequencies. Use one loop with the `||` (logical OR) operator in the condition `i < s.length() || i < t.length()` to continue iterating as long as at least one string has remaining characters. 
+
+Increment the count for characters in `s` and decrement the count for characters in `t`, using separate boundary checks to avoid accessing characters beyond either string's length.
+
+Finally, check whether every frequency is zero. If any count is non-zero, return `false`; otherwise, return `true`.
+
+```cpp
+class Solution {
+public:
+    bool isAnagram(string s, string t) {
+
+        // Step 1: Create one map
+        unordered_map<char, int> freq;
+
+        // Step 2: Process both strings in one loop
+        for (int i = 0; i < s.length() || i < t.length(); i++) {
+
+            if (i < s.length()) {
+                freq[s[i]]++;
+            }
+
+            if (i < t.length()) {
+                freq[t[i]]--;
+            }
+        }
+
+        // Step 3: Check whether every count is zero
+        for (auto entry : freq) {
+            if (entry.second != 0) {
+                return false;
+            }
+        }
+
+        // Step 4: All counts balance
+        return true;
+    }
+};
+```
+
+**Time Complexity:** `O(n + m)`
+
+**Space Complexity:** `O(1)`
+
+---
+## 5. Frequency Array — Single Array with Increment and Decrement
+
+**Approach:** Create an integer array `freq[26]` initialized to `0`, where each index represents a lowercase English letter from `'a'` to `'z'`. 
+
+To find the correct index for a character, subtract `'a'` from it. For example, `'a' - 'a' = 0`, `'b' - 'a' = 1`, and `'z' - 'a' = 25`.
+
+#### Character Frequency Mapping
+
+Consider the string `s = "dad"`. 
+
+The expression `s[i] - 'a'` converts each character into its corresponding array index. The frequency at that index is incremented whenever the character appears.
+
+**Code:**
+
+```cpp
+int freq[26] = {0};
+string s = "dad";
+
+for (int i = 0; i < s.length(); i++) {
+    freq[s[i] - 'a']++;
+}
+```
+
+
+| Character | Calculation | Array Index | Frequency After Processing `"dad"` |
+|---|---|---:|---:|
+| `'a'` | `'a' - 'a'` | 0 | 1 |
+| `'b'` | `'b' - 'a'` | 1 | 0 |
+| `'c'` | `'c' - 'a'` | 2 | 0 |
+| `'d'` | `'d' - 'a'` | 3 | 2 |
+| `'e'` | `'e' - 'a'` | 4 | 0 |
+| `...` | `...` | `...` | `...` |
+| `'z'` | `'z' - 'a'` | 25 | 0 |
+
+
+This maps every lowercase letter to an index between `0` and `25`. Traverse string `s` and increment the corresponding counter for each character. Then traverse string `t` and decrement the corresponding counter. 
+
+Finally, check all 26 counters. If any counter is non-zero, return `false`; otherwise, return `true`.
+
+```cpp
+class Solution {
+public:
+    bool isAnagram(string s, string t) {
+
+        // Step 1: Create 26 counters, all initialized to 0
+        int freq[26] = {0};
+
+        // Step 2: Count each character in string s
+        for (int i = 0; i < s.length(); i++) {
+            freq[s[i] - 'a']++;
+        }
+
+        // Step 3: Decrease the count for each character in string t
+        for (int i = 0; i < t.length(); i++) {
+            freq[t[i] - 'a']--;
+        }
+
+        // Step 4: Check whether every counter is 0
+        for (int i = 0; i < 26; i++) {
+            if (freq[i] != 0) {
+                return false;
+            }
+        }
+
+        // Step 5: All character counts match
+        return true;
+    }
+};
+```
+
+**Time Complexity:** `O(n + m)` 
+
+**Space Complexity:** `O(1)`
+
+---
+
+## 6. Frequency Array — Two Arrays with Character Frequency Comparison
+
+**Approach:** First, check whether the lengths of `s` and `t` are different. If they are, return `false` because anagrams must contain the same number of characters. 
+
+Create two integer arrays, `freqS[26]` and `freqT[26]`, initialized to zero. Traverse each string and increment the corresponding counter using `character - 'a'` to map each lowercase letter to an index from `0` to `25`. 
+
+Finally, compare all 26 counters. If any frequency differs, return `false`; otherwise, return `true`.
+
+```cpp
+class Solution {
+public:
+    bool isAnagram(string s, string t) {
+
+        // Step 1: Check if lengths are different
+        if (s.length() != t.length()) {
+            return false;
+        }
+
+        // Step 2: Create separate frequency arrays
+        int freqS[26] = {0};
+        int freqT[26] = {0};
+
+        // Step 3: Count characters in s
+        for (int i = 0; i < s.length(); i++) {
+            freqS[s[i] - 'a']++;
+        }
+
+        // Step 4: Count characters in t
+        for (int i = 0; i < t.length(); i++) {
+            freqT[t[i] - 'a']++;
+        }
+
+        // Step 5: Compare all 26 counters
+        for (int i = 0; i < 26; i++) {
+            if (freqS[i] != freqT[i]) {
+                return false;
+            }
+        }
+
+        // Step 6: All frequencies match
+        return true;
+    }
+};
+```
+
+**Time Complexity:** `O(n)` 
+
+**Space Complexity:** `O(1)` 
+
+---
+
+## 7. Frequency Array — Single 256-Element Array with Simultaneous Counting
+
+**Approach:** First, check whether the lengths of `s` and `t` are different. If they are, return `false`. 
+
+Create a frequency array of size `256`, initialized to zero, to track all possible byte values. 
+
+Use a single loop to increment the count for each character in `s` and decrement the count for the corresponding character in `t`, using `static_cast<unsigned char>` to ensure valid array indices. 
+
+In the anagram solution, `freq[static_cast<unsigned char>(s[i])]++` increases the counter for a character in `s`, while `freq[static_cast<unsigned char>(t[i])]--` decreases the counter for a character in `t`. If all counters return to zero, the byte frequencies match.
+
+## Understanding `static_cast<unsigned char>` in C++
+
+In our solution, we use `static_cast<unsigned char>` to convert a character into an unsigned byte value before using it as an index in our 256-element frequency array.
+
+To understand why this is necessary, let's break it down step by step.
+
+### 1. What Is a Byte?
+
+A byte is a group of 8 bits on a typical modern computer. Each bit can be either `0` or `1`.
+
+For example, the decimal number `200` is represented using 8 bits as follows:
+
+```text
+Binary:  11001000
+Decimal: 200
+```
+
+These 8 bits can represent values from `0` to `255` when interpreted as an unsigned number.
+
+### 2. How Are Characters Stored?
+
+When we write a character in C++, the computer represents it using a numeric value.
+
+For example, in ASCII:
+
+| Character | Numeric value |
+|---|---:|
+| `'a'` | `97` |
+| `'b'` | `98` |
+| `'c'` | `99` |
+| `'d'` | `100` |
+
+Consider this code:
+
+```cpp
+char ch = 'a';
+```
+
+Here, `ch` stores the character `'a'`, whose numeric value in ASCII is `97`.
+
+### 3. What Do Signed and Unsigned Mean?
+
+**Signed** numeric types can represent negative numbers, zero, and positive numbers.
+
+**Unsigned** numeric types represent zero and positive numbers, but not negative numbers.
+
+On a typical system with 8-bit `char` types:
+
+| Type | Can represent negative values? | Range |
+|---|---|---|
+| `signed char` | Yes | `-128` to `127` |
+| `unsigned char` | No | `0` to `255` |
+
+A plain `char` can behave as either signed or unsigned, depending on the compiler and platform.
+
+### 4. How Can the Same Bits Represent `200` or `-56`?
+
+Consider the 8-bit pattern:
+
+```text
+11001000
+```
+
+The bits do not change, but their interpretation depends on the type.
+
+| Type | Interpretation | Value |
+|---|---|---:|
+| `unsigned char` | Unsigned 8-bit value | `200` |
+| `signed char` | Signed value using two's complement | `-56` |
+
+A signed 8-bit integer cannot represent positive `200`, because its maximum value is `127`. 
+
+Therefore, this bit pattern represents `-56` when interpreted as a signed two's-complement value.
+
+This does not mean every character becomes negative. Ordinary ASCII characters such as `'a'` have positive values within the range of a signed `char`. The issue arises with byte values above `127`.
+
+### 5. What Does `static_cast<unsigned char>` Do?
+
+Consider this example:
+
+```cpp
+char ch = 'a';
+
+unsigned char result = static_cast<unsigned char>(ch);
+```
+
+Let's understand each part:
+
+| Expression | Meaning |
+|---|---|
+| `ch` | The variable containing the character |
+| `unsigned char` | The target type of the conversion |
+| `static_cast<unsigned char>(ch)` | Explicitly converts `ch` to `unsigned char` |
+| `result` | Stores the converted value |
+
+Since `'a'` has the numeric value `97`, the result is still `97`.
+
+Now consider a byte whose value is `200`. If a signed `char` represents that byte as `-56`, converting it to `unsigned char` produces the corresponding unsigned byte value, `200`, on a typical 8-bit-byte system.
+
+In simple words, **`static_cast<unsigned char>(ch)` explicitly converts the character to an unsigned character value.**
+
+### 6. Why Do We Need It in Our Frequency Array?
+
+Our solution uses this array:
+
+```cpp
+int freq[256] = {0};
+```
+
+It contains 256 counters, with valid indexes ranging from `0` to `255`.
+
+We then write:
+
+```cpp
+freq[static_cast<unsigned char>(s[i])]++;
+```
+
+Let's see what happens when `s[i]` contains `'a'`:
+
+| Step | Operation | Result |
+|---|---|---|
+| 1 | Read `s[i]` | `'a'` |
+| 2 | Obtain its ASCII value | `97` |
+| 3 | Convert it to `unsigned char` | `97` |
+| 4 | Access the array | `freq[97]` |
+| 5 | Increment the counter | `freq[97]` increases by `1` |
+
+Now consider a byte value of `200`:
+
+| Step | Without conversion | With conversion |
+|---|---|---|
+| Byte's unsigned value | `200` | `200` |
+| Possible signed `char` interpretation | `-56` | `-56` before conversion |
+| Value used as the array index | `-56` | `200` |
+| Array access | Invalid index | `freq[200]`, valid index |
+
+Using `freq[-56]` would access an invalid array position and cause undefined behavior. Converting the character to `unsigned char` ensures that its byte value is interpreted in the range `0` to `255` before indexing the array.
+
+
+Finally, check all 256 counters. If any counter is non-zero, return `false`; otherwise, return `true`.
+
+```cpp id="7j8y6a"
+class Solution {
+public:
+    bool isAnagram(string s, string t) {
+
+        // Step 1: Check if lengths are different
+        if (s.length() != t.length()) {
+            return false;
+        }
+
+        // Step 2: Create 256 counters, initialized to 0
+        int freq[256] = {0};
+
+        // Step 3: Count characters in s and decrease counts using t
+        for (int i = 0; i < s.length(); i++) {
+            freq[static_cast<unsigned char>(s[i])]++;
+            freq[static_cast<unsigned char>(t[i])]--;
+        }
+
+        // Step 4: Check whether every counter is 0
+        for (int i = 0; i < 256; i++) {
+            if (freq[i] != 0) {
+                return false;
+            }
+        }
+
+        // Step 5: All byte frequencies balance
+        return true;
+    }
+};
+```
+
+**Time Complexity:** `O(n)`
+
+**Space Complexity:** `O(1)`
+
+ ---
+
+Thank you for taking the time to read this. Hope you find it helpful and enjoy exploring the approaches. ❤️
+
+If you found it helpful, please <b>⬆️ upvote and leave a comment!</b> 💬
+
+  <img src="https://assets.leetcode.com/users/images/5ce11bf6-0db9-4239-bbb9-dfe5d76443f3_1666346629.9681695.gif" alt="LeetCode GIF" width="400">
