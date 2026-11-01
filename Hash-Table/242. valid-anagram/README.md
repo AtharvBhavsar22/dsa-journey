@@ -13,9 +13,465 @@ a try yourself!
 
 ------------------------------------------------------------------------
 
-# Understanding Bits, Bytes, Hexadecimal, Unicode and UTF-8
 
-## 1. What Is a Bit?
+
+## 1. Sorting - Sort Both Strings and Compare
+
+**Approach:** Sort both strings in ascending order using
+`sort(s.begin(), s.end())` and `sort(t.begin(), t.end())`.
+
+If the strings are anagrams, sorting places the same characters in the
+same order in both strings.
+
+Finally, compare the sorted strings using `s == t`. If they are equal,
+return `true`; otherwise, return `false`.
+
+``` cpp
+class Solution {
+public:
+    bool isAnagram(string s, string t) {
+
+        // Step 2: Sort both strings
+        sort(s.begin(), s.end());
+        sort(t.begin(), t.end());
+
+        // Step 3: Compare the sorted strings
+        return s == t;
+    }
+};
+```
+
+**Time Complexity:** `O(n log n + m log m)`
+
+**Space Complexity:** `O(n + m)` for the by-value input strings; sorting
+itself uses implementation-dependent stack space.
+
+---
+
+## 2. Hashing --- Two Hash Maps for Character Frequency Counting
+
+**Approach:** Create two `unordered_map` objects to store the frequency
+of each character in strings `s` and `t`.
+
+Traverse both strings and increment the frequency of each character.
+Then compare the frequencies of all lowercase English letters from `'a'`
+to `'z'`.
+
+If any frequency differs, return `false`; otherwise, return `true`.
+
+``` cpp
+class Solution {
+public:
+    bool isAnagram(string s, string t) {
+
+        // Step 1: Create two maps
+        unordered_map<char, int> mapS;
+        unordered_map<char, int> mapT;
+
+        // Step 2: Count characters in s
+        for (int i = 0; i < s.length(); i++) {
+            mapS[s[i]]++;
+        }
+
+        // Step 3: Count characters in t
+        for (int i = 0; i < t.length(); i++) {
+            mapT[t[i]]++;
+        }
+
+        // Step 4: Compare character frequencies
+        for (char c = 'a'; c <= 'z'; c++) {
+            if (mapS[c] != mapT[c]) {
+                return false;
+            }
+        }
+
+        // Step 5: All frequencies match
+        return true;
+    }
+};
+```
+
+**Time Complexity:** `O(n + m)`
+
+**Space Complexity:** `O(1)` under the problem's fixed lowercase-English
+alphabet constraint.
+
+---
+
+## 3. Hashing --- Single Hash Map with Frequency Increment and Decrement
+
+**Approach:** Create a single `unordered_map` to store the frequency of
+each character in string `s`.
+
+Traverse `s` and increment each character's count. Then traverse `t` and
+decrement the count of each character.
+
+Finally, iterate through the map and check whether every frequency is
+zero.
+
+If any count is non-zero, return `false`; otherwise, return `true`.
+
+``` cpp
+class Solution {
+public:
+    bool isAnagram(string s, string t) {
+
+        // Step 1: Create one map
+        unordered_map<char, int> freq;
+
+        // Step 2: Count characters in s
+        for (int i = 0; i < s.length(); i++) {
+            freq[s[i]]++;
+        }
+
+        // Step 3: Decrease counts using t
+        for (int i = 0; i < t.length(); i++) {
+            freq[t[i]]--;
+        }
+
+        // Step 4: Check whether every count is zero
+        for (auto it = freq.begin(); it != freq.end(); it++) {
+            if (it->second != 0) {
+                return false;
+            }
+        }
+
+        // Step 5: All counts are zero
+        return true;
+    }
+};
+```
+
+**Time Complexity:** `O(n + m)`
+
+**Space Complexity:** `O(1)` under the problem's fixed lowercase-English
+alphabet constraint.
+ 
+---
+
+## 4. Frequency Array — Single Array with Frequency Increment and Decrement
+
+**Approach:** Create an integer array `freq[26]`, initialized to `0`, where each index represents a lowercase English letter from `'a'` to `'z'`.
+
+To find the correct index for a character, subtract `'a'` from it. For example, `'a' - 'a' = 0`, `'b' - 'a' = 1`, and `'z' - 'a' = 25`.
+
+The expression `s[i] - 'a'` converts each character into its corresponding array index. Increment the counter at that index whenever the character appears.
+
+**Character Frequency Mapping**
+
+Consider the string `s = "dad"`.
+
+```cpp
+int freq[26] = {0};
+string s = "dad";
+
+for (int i = 0; i < s.length(); i++) {
+    freq[s[i] - 'a']++;
+}
+```
+
+| Character | Calculation | Array Index | Frequency |
+|---|---|---:|---:|
+| `'a'` | `'a' - 'a'` | 0 | 1 |
+| `'b'` | `'b' - 'a'` | 1 | 0 |
+| `'c'` | `'c' - 'a'` | 2 | 0 |
+| `'d'` | `'d' - 'a'` | 3 | 2 |
+| `'e'` | `'e' - 'a'` | 4 | 0 |
+| `...` | `...` | `...` | `...` |
+| `'z'` | `'z' - 'a'` | 25 | 0 |
+
+This maps every lowercase letter to an index between `0` and `25`.
+
+Traverse string `s` and increment the corresponding counter for each character. Then traverse string `t` and decrement the corresponding counter.
+
+Finally, check all 26 counters. If any counter is non-zero, return `false`; otherwise, return `true`.
+
+**Code:**
+
+```cpp
+class Solution {
+public:
+    bool isAnagram(string s, string t) {
+
+        // Step 1: Create 26 counters, all initialized to 0
+        int freq[26] = {0};
+
+        // Step 2: Count each character in string s
+        for (int i = 0; i < s.length(); i++) {
+            freq[s[i] - 'a']++;
+        }
+
+        // Step 3: Decrease the count for each character in string t
+        for (int i = 0; i < t.length(); i++) {
+            freq[t[i] - 'a']--;
+        }
+
+        // Step 4: Check whether every counter is 0
+        for (int i = 0; i < 26; i++) {
+            if (freq[i] != 0) {
+                return false;
+            }
+        }
+
+        // Step 5: All character counts match
+        return true;
+    }
+};
+```
+
+**Time Complexity:** `O(n + m)`
+
+**Space Complexity:** `O(1)` 
+
+---
+
+
+## 5. Frequency Array --- Two Arrays with Character Frequency Comparison
+
+**Approach:** First, check whether the lengths of `s` and `t` are
+different. If they are, return `false` because anagrams must contain the
+same number of characters.
+
+Create two integer arrays, `freqS[26]` and `freqT[26]`, initialized to
+zero. Traverse each string and increment the corresponding counter using
+`character - 'a'` to map each lowercase letter to an index from `0` to
+`25`.
+
+Finally, compare all 26 counters. If any frequency differs, return
+`false`; otherwise, return `true`.
+
+``` cpp
+class Solution {
+public:
+    bool isAnagram(string s, string t) {
+
+        // Step 1: Check if lengths are different
+        if (s.length() != t.length()) {
+            return false;
+        }
+
+        // Step 2: Create separate frequency arrays
+        int freqS[26] = {0};
+        int freqT[26] = {0};
+
+        // Step 3: Count characters in s
+        for (int i = 0; i < s.length(); i++) {
+            freqS[s[i] - 'a']++;
+        }
+
+        // Step 4: Count characters in t
+        for (int i = 0; i < t.length(); i++) {
+            freqT[t[i] - 'a']++;
+        }
+
+        // Step 5: Compare all 26 counters
+        for (int i = 0; i < 26; i++) {
+            if (freqS[i] != freqT[i]) {
+                return false;
+            }
+        }
+
+        // Step 6: All frequencies match
+        return true;
+    }
+};
+```
+
+**Time Complexity:** `O(n)`, because the lengths are checked first and
+the remaining work processes equal-length strings.
+
+**Space Complexity:** `O(1)`
+
+---
+
+## 6. Frequency Array — Single 256-Element Array with Simultaneous Counting
+
+**Approach:** First, check whether the lengths of `s` and `t` are different. If they are, return `false`.
+
+Create a frequency array of size `256`, initialized to zero, to track all possible byte values.
+
+Use a single loop to increment the count for each byte in `s` and decrement the count for the corresponding byte in `t`. We use `static_cast<unsigned char>` to ensure valid array indices.
+
+The expression `freq[static_cast<unsigned char>(s[i])]++` increases the counter for a byte in `s`, while `freq[static_cast<unsigned char>(t[i])]--` decreases the counter for a byte in `t`.
+
+Finally, check all 256 counters. If any counter is non-zero, return `false`; otherwise, return `true`.
+
+#### Understanding `static_cast<unsigned char>` in C++
+
+We use `static_cast<unsigned char>` to convert a character into an unsigned byte value before using it as an index in our 256-element frequency array.
+
+Let's understand why this is necessary step by step.
+
+**1. What Is a Byte?**
+
+A byte is a group of 8 bits on a typical modern computer. 
+
+Each bit can be either `0` or `1`.
+
+For example, the decimal number `200` is represented using 8 bits as follows:
+
+```text
+Binary:  11001000
+Decimal: 200
+```
+
+These 8 bits can represent values from `0` to `255` when interpreted as an unsigned number.
+
+#### 2. How Are Characters Stored?
+
+When we write a character in C++, the computer represents it using a numeric value.
+
+For example, in ASCII:
+
+| Character | Numeric Value |
+|:---:|---:|
+| `'a'` | 97 |
+| `'b'` | 98 |
+| `'c'` | 99 |
+| `'d'` | 100 |
+
+Consider this code:
+
+```cpp
+char ch = 'a';
+```
+
+Here, `ch` stores the character `'a'`, whose numeric value in ASCII is `97`.
+
+#### 3. What Do Signed and Unsigned Mean?
+
+**Signed** numeric types can represent negative numbers, zero, and positive numbers.
+
+**Unsigned** numeric types represent zero and positive numbers, but not negative numbers.
+
+On a typical system with 8-bit `char` types:
+
+| Type | Can Represent Negative Values? | Range |
+|---|:---:|---:|
+| `signed char` | Yes | -128 to 127 |
+| `unsigned char` | No | 0 to 255 |
+
+A plain `char` can behave as either signed or unsigned, depending on the compiler and platform.
+
+#### 4. How Can the Same Bits Represent `200` or `-56`?
+
+Consider the following 8-bit pattern:
+
+```text
+11001000
+```
+
+The bits do not change, but their interpretation depends on the type.
+
+| Type | Interpretation | Value |
+|---|---|---:|
+| `unsigned char` | Unsigned 8-bit value | 200 |
+| `signed char` | Signed value using two's complement | -56 |
+
+A signed 8-bit integer cannot represent positive `200`, because its maximum value is `127`.
+
+Therefore, this bit pattern represents `-56` when interpreted as a signed two's-complement value.
+
+This does not mean every character becomes negative. Ordinary ASCII characters such as `'a'` have positive values within the range of a signed `char`. The issue arises with byte values above `127`.
+
+#### 5. What Does `static_cast<unsigned char>` Do?
+
+Consider this example:
+
+```cpp
+char ch = 'a';
+
+unsigned char result = static_cast<unsigned char>(ch);
+```
+
+Let's understand each part:
+
+| Expression | Meaning |
+|---|---|
+| `ch` | The variable containing the character |
+| `unsigned char` | The target type of the conversion |
+| `static_cast<unsigned char>(ch)` | Explicitly converts `ch` to `unsigned char` |
+| `result` | Stores the converted value |
+
+Since `'a'` has the numeric value `97`, the result is still `97`.
+
+Now consider a byte whose value is `200`. If a signed `char` represents that byte as `-56`, converting it to `unsigned char` produces the corresponding unsigned byte value, `200`, on a typical 8-bit-byte system.
+
+In simple words, **`static_cast<unsigned char>(ch)` explicitly converts the character to an unsigned character value.**
+
+#### 6. Why Do We Need It in Our Frequency Array?
+
+Our solution uses this array:
+
+```cpp
+int freq[256] = {0};
+```
+
+It contains 256 counters, with valid indices ranging from `0` to `255`.
+
+We then write:
+
+```cpp
+freq[static_cast<unsigned char>(s[i])]++;
+```
+
+Let's see what happens when `s[i]` contains `'a'`:
+
+| Step | Operation | Result |
+|---:|---|---|
+| 1 | Read `s[i]` | `'a'` |
+| 2 | Obtain its ASCII value | `97` |
+| 3 | Convert to `unsigned char` | `97` |
+| 4 | Access the array | `freq[97]` |
+| 5 | Increment the counter | `freq[97]` increases by `1` |
+
+
+### Final Code
+
+```cpp
+class Solution {
+public:
+    bool isAnagram(string s, string t) {
+
+        // Step 1: Check if lengths are different
+        if (s.length() != t.length()) {
+            return false;
+        }
+
+        // Step 2: Create 256 counters, initialized to 0
+        int freq[256] = {0};
+
+        // Step 3: Count bytes in s and decrease counts using t
+        for (int i = 0; i < s.length(); i++) {
+            freq[static_cast<unsigned char>(s[i])]++;
+            freq[static_cast<unsigned char>(t[i])]--;
+        }
+
+        // Step 4: Check whether every counter is 0
+        for (int i = 0; i < 256; i++) {
+            if (freq[i] != 0) {
+                return false;
+            }
+        }
+
+        // Step 5: All byte frequencies balance
+        return true;
+    }
+};
+```
+
+**Time Complexity:** `O(n)` 
+
+**Space Complexity:** `O(1)`
+
+---
+
+
+# Unicode Follow Up
+
+## Understanding Bits, Bytes, Hexadecimal, Unicode and UTF-8
+
+### 1. What Is a Bit?
 
 A **bit** is the smallest unit of digital data. It can have only one of two values:
 
@@ -35,7 +491,9 @@ Examples:
 
 Each `0` or `1` is one bit.
 
-## 2. What Is a Byte?
+---
+
+### 2. What Is a Byte?
 
 A **byte** consists of 8 bits.
 
@@ -64,66 +522,7 @@ The largest value is:
 11111111 = 255
 ```
 
-
-## 3. What Is Binary?
-
-Binary is a number system with a base of 2. It uses only two digits: `0` and `1`.
-
-For example:
-
-```text
-Binary: 01000001
-Decimal: 65
-```
-
-Each binary position represents a power of two.
-
-For `01000001`:
-
-
-(1 x 2^6) + (1 x 2^0) = 65
-
-For binary `01000001`, each bit represents a power of 2, starting from \(2^0\) on the right.
-
-| Bit position | \(2^7\) | \(2^6\) | \(2^5\) | \(2^4\) | \(2^3\) | \(2^2\) | \(2^1\) | \(2^0\) |
-|:--|--:|--:|--:|--:|--:|--:|--:|--:|
-| **Bit** | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 1 |
-| **Place value** | 128 | 64 | 32 | 16 | 8 | 4 | 2 | 1 |
-| **Calculation** | 0 × 128 | 1 × 64 | 0 × 32 | 0 × 16 | 0 × 8 | 0 × 4 | 0 × 2 | 1 × 1 |
-| **Result** | 0 | 64 | 0 | 0 | 0 | 0 | 0 | 1 |
-
-Add the results of all eight positions:
-
-
-0 + 64 + 0 + 0 + 0 + 0 + 0 + 1 = 65
-\
-Therefore, binary `01000001` represents decimal `65`.
-
-
-## 4. What Is Decimal?
-
-Decimal is the familiar base-10 number system. It uses digits from `0` to `9`.
-
-Examples:
-
-```text
-10
-25
-65
-255
-```
-
-Computers can represent the same value in binary, decimal or hexadecimal. Only the way we write the number changes.
-
-For example:
-
-| Number system | Representation |
-|---|---|
-| Binary | `01000001` |
-| Decimal | `65` |
-| Hexadecimal | `41` |
-
-All three represent the same numerical value.
+---
 
 ## 5. What Is Hexadecimal?
 
@@ -168,6 +567,8 @@ For example:
 
 These are three representations of the same value.
 
+---
+
 ## 6. What Is Unicode?
 
 **Unicode is a standard that assigns code points to characters and symbols used across writing systems.**
@@ -186,7 +587,9 @@ The notation `U+` indicates that the following value identifies a Unicode code p
 
 Unicode tells us **which code point represents a character or symbol**. It does not mean that every code point occupies the same number of bytes in memory or in a text encoding.
 
-## 7. What Is a Unicode Code Point?
+---
+
+### 7. What Is a Unicode Code Point?
 
 A **code point** is a numerical value assigned to a character or symbol by Unicode.
 
@@ -213,13 +616,25 @@ The code point can be written as the hexadecimal number `1F60A`. The `U+` prefix
 - Unicode is the standard.
 - A Unicode code point is one particular value defined by that standard.
 
-## 8. What Is UTF-8?
+---
+
+### 8. What Is UTF-8 (Unicode Transformation Format – 8-bit) ?
 
 **UTF-8 is a character encoding that represents Unicode code points using sequences of bytes.**
 
-A Unicode code point does not automatically tell us which bytes are used to represent it in a file or a UTF-8 string. UTF-8 defines that byte representation.
+A Unicode code point does not automatically tell us which bytes are used to represent it in a file or a UTF-8 string.
 
-UTF-8 uses between one and four bytes per code point.
+It is a character encoding standard that represents text using 1 to 4 bytes.
+
+For example:
+- A → 1 byte
+- ₹ → 3 bytes
+- Many emojis → 4 bytes
+
+UTF-8 is widely used for storing and displaying text across different languages and platforms.
+
+UTF-8 defines that byte representation.
+
 
 | Character | Unicode code point | UTF-8 bytes | Number of bytes |
 |---|---|---|---:|
@@ -235,9 +650,10 @@ Unicode code point: U+1F60A
 UTF-8 bytes:        F0 9F 98 8A
 ```
 
-These are different representations of the same code point: one is its Unicode value, and the other is its UTF-8 byte encoding.
+---
 
-## 9. How Do Unicode and UTF-8 Work Together?
+
+### 9. How Do Unicode and UTF-8 Work Together?
 
 Consider the emoji `😊`.
 
@@ -247,11 +663,17 @@ Consider the emoji `😊`.
 😊 → U+1F60A
 ```
 
+How do we store `U+1F60A` as bytes in a computer?
+
+The code point identifies the character, but it doesn't by itself specify the byte sequence used to store it in a particular encoding.
+
 ### Step 2: UTF-8 encodes that code point
 
 ```text
 U+1F60A → F0 9F 98 8A
 ```
+
+Computers store and process data as bytes.
 
 ### Step 3: The bytes are stored in the UTF-8 string
 
@@ -267,7 +689,7 @@ F0 9F 98 8A → U+1F60A → 😊
 
 This is the basic relationship between Unicode and UTF-8.
 
-
+---
 
 ## Unicode Follow-up Helper
 
@@ -320,7 +742,7 @@ vector<char32_t> decodeUTF8(const string& s) {
 ```
 
 ---
-## How the `decodeUTF8()` Function Works
+### How the `decodeUTF8()` Function Works
 
 The `decodeUTF8()` function converts a UTF-8 encoded string into a vector of Unicode code points. 
 
@@ -346,6 +768,117 @@ Creates an empty vector that will store each decoded Unicode code point.
 
 For example, decoding `A😊` produces the code points `U+0041` and `U+1F60A`.
 
+---
+
+### Understand why we used chr32_t 
+
+#### Unicode Code Point Range
+
+Unicode code points range from `U+0000` to `U+10FFFF`.
+
+- **Minimum:** `U+0000` (decimal 0).
+- **Maximum:** `U+10FFFF` (decimal 1,114,111).
+
+#### Why 21 Bits?
+
+
+The maximum Unicode code point is `U+10FFFF`.
+
+To understand why it requires 21 bits, let's convert its hexadecimal value into decimal.
+
+
+`10FFFF_{16} = 1,114,111_{10}`
+
+We know that each binary bit can represent either `0` or `1`.
+
+The maximum value representable using \(n\) bits is:
+
+`2^n - 1`
+
+Let's compare the maximum values:
+
+| Bits | Maximum decimal value |
+|:--:|--:|
+| 8 | 255 |
+| 16 | 65,535 |
+| 20 | 1,048,575 |
+| 21 | 2,097,151 |
+| 32 | 4,294,967,295 |
+
+Unicode's maximum code point is:
+
+```text
+1,114,111
+```
+
+- 20 bits can represent values only up to `1,048,575`.
+- 21 bits can represent values up to `2,097,151`.
+
+Therefore, Unicode requires a maximum of **21 bits** to represent its code points.
+
+Mathematically:
+
+`2^{20} < 1,114,111 < 2^{21}
+`
+
+Which means:
+
+`1,048,576 < 1,114,111 < 2,097,152`
+
+
+Hence, 21 bits are required.
+
+---
+
+### Why Can't We Use `char`?
+
+In C++, a `char` typically occupies **8 bits (1 byte)**.
+
+This means it can represent 256 possible bit patterns.
+
+For example:
+
+```cpp
+char ch = 'A';  // Works
+char ch = 'B';  // Works
+```
+
+However, consider the following emoji:
+
+```text
+😊 → U+1F60A
+```
+
+Its Unicode code point is `U+1F60A`, which requires more than 8 bits.
+
+A single `char` cannot hold the entire Unicode code point.
+
+
+
+---
+
+### Why Do We Use `char32_t`?
+
+```cpp
+vector<char32_t> chars;
+```
+
+- `char32_t` is a character type designed to hold Unicode code points.
+- A Unicode code point can require up to 21 bits.
+- `char32_t` is guaranteed to be at least 32 bits, so it can hold every valid Unicode code point.
+- We use it because ordinary `char` is typically only 8 bits and cannot hold every Unicode code point individually.
+
+For example:
+
+```cpp
+char32_t ch = U'😊';
+```
+
+Here, `U` indicates a UTF-32 character literal, and `char32_t` stores the complete Unicode code point.
+
+---
+
+
 ### 3. Iterate Through the UTF-8 String
 
 ```cpp
@@ -360,17 +893,134 @@ The loop starts at byte index `0` and continues until the end of the string.
 
 This is necessary because UTF-8 characters can occupy different numbers of bytes.
 
+#### Why Do We Use `size_t` Instead of `int`?
+
+`size_t` is an unsigned integer type in C++ specifically used to represent sizes and indexes.
+
+- It is used to store non-negative integer values.
+- It is commonly used for indexing strings, vectors, arrays, and other containers.
+- Functions like `string.size()` and `vector.size()` return `size_t`.
+
+
+**Example:**
+
+```cpp
+string s = "HELLO";
+
+size_t length = s.size();  // Returns 5
+```
+
+Here:
+- `size_t` is the data type.
+- `length` is the variable name.
+- `s.size()` returns the number of characters in the string.
+
+#### Why Use `size_t` Instead of `int`?
+
+There are two main reasons:
+
+1. **Type Compatibility:** Functions like `s.size()` return `size_t`. Using `size_t` for indexes keeps the types consistent and avoids signed/unsigned comparison warnings.
+
+2. **Larger Range:** `size_t` can represent the sizes of objects supported by the platform, whereas `int` may not be large enough to store very large container sizes.
+
+
+Therefore, we use:
+
+```cpp
+for (size_t i = 0; i < s.size(); i++) {
+    cout << s[i];
+}
+```
+
+Now both `i` and `s.size()` use the same type.
+
+---
+
+
 ### 4. Read the Current Byte
 
 ```cpp
 unsigned char c = static_cast<unsigned char>(s[i]);
 ```
 
-Reads the byte at index `i` and converts it to an `unsigned char`.
+### Why Do We Convert `char` to `unsigned char`?
 
-A plain `char` can be signed, depending on the system. Converting it to `unsigned char` ensures that UTF-8 bytes are interpreted as values from `0` to `255`, which makes bitwise operations reliable.
+In our UTF-8 decoder, we read individual bytes from a string. However, there is an important issue with how C++ interprets the `char` data type.
 
-For example, the hexadecimal byte `F0` has the decimal value `240` and the binary representation `11110000`.
+**1. Understanding the Problem**
+
+- A `char` typically occupies 8 bits.
+- Depending on the compiler and platform, `char` can be signed or unsigned.
+- When `char` is signed, its usual range is `-128` to `127`.
+- However, UTF-8 bytes can have values ranging from `0` to `255`.
+
+This means that UTF-8 bytes with values greater than `127` may be interpreted as negative numbers when stored in a signed `char`.
+
+**2. Understanding with an Example**
+
+Consider the UTF-8 encoding of the emoji `😊`:
+
+| UTF-8 Byte | Actual Decimal Value | Signed `char` Interpretation |
+|---|---:|---:|
+| `F0` | 240 | -16 |
+| `9F` | 159 | -97 |
+| `98` | 152 | -104 |
+| `8A` | 138 | -118 |
+
+Why does this happen?
+
+An 8-bit signed integer has a maximum value of `127`. When a byte value exceeds this limit, its bit pattern is interpreted as a negative number using two's complement.
+
+For example:
+
+`240 - 256 = -16`
+
+
+Therefore, the byte `F0`, whose actual decimal value is `240`, can be interpreted as `-16` when stored in a signed `char`.
+
+**3. How Does `unsigned char` Solve This?**
+
+An 8-bit `unsigned char` has a range of `0` to `255`.
+
+It allows us to interpret every possible byte value as a non-negative number.
+
+| UTF-8 Byte | Actual Decimal Value | Unsigned `char` Value |
+|---|---:|---:|
+| `F0` | 240 | 240 |
+| `9F` | 159 | 159 |
+| `98` | 152 | 152 |
+| `8A` | 138 | 138 |
+
+Now, we can work with the actual byte values without them being interpreted as negative numbers.
+
+**4. Implementation in Our Decoder**
+
+```cpp
+unsigned char c = static_cast<unsigned char>(s[i]);
+```
+
+Let's understand each part:
+
+- `s[i]` accesses one byte from the UTF-8 string.
+- `static_cast<unsigned char>` converts that byte into an unsigned value.
+- `unsigned char c` stores the converted byte.
+
+**Why Is This Important?**
+
+Our UTF-8 decoder uses bitwise operations and hexadecimal comparisons to identify the byte patterns.
+
+For example:
+
+```cpp
+if (c <= 0x7F)
+```
+
+We need the actual byte value for these comparisons and operations to work correctly.
+
+By converting to `unsigned char`, we avoid problems caused by signed `char` interpretation.
+
+---
+
 
 ### 5. Initialize the Code Point and Sequence Length
 
@@ -383,6 +1033,8 @@ size_t len = 0;
 - `len`: Stores the number of bytes used by the current UTF-8 sequence.
 
 The `char32_t` type is used because it can represent Unicode code point values.
+
+---
 
 ### 6. Identify the UTF-8 Sequence Length
 
@@ -404,6 +1056,19 @@ if (c <= 0x7F) {
     len = 1;
 }
 ```
+For example, 
+
+if the input string contains A:
+`s[i] = 'A'
+c    = 65`
+
+its binary representation is:
+
+`01000001`
+
+0x7F    whatthisin hb=binary 
+
+0x7F in hexadecimal = `01111111` in binary.
 
 **Step 1: Check the byte value**
 
@@ -468,6 +1133,28 @@ else if ((c & 0xE0) == 0xC0) {
 ```
 
 UTF-8 uses the pattern `110xxxxx` for two-byte sequences. The first byte contains three prefix bits (`110`) and five payload bits (`xxxxx`). The second byte contains six additional payload bits.
+
+**Example:**
+
+The character `é` is encoded using two bytes in UTF-8:
+
+| Byte Position | Hexadecimal | Binary |
+|---|---|---|
+| First byte | `0xC3` | `11000011` |
+| Second byte | `0xA9` | `10101001` |
+
+At the current iteration, we read the first byte, `0xC3`, from the string and store it in `c`.
+
+Therefore:
+
+```text
+c = 0xC3
+c = 195 (decimal)
+c = 11000011 (binary)
+```
+
+We then use this byte to identify the UTF-8 sequence pattern.
+
 
 #### Step 1: Understand the bitwise AND operator
 
@@ -574,6 +1261,29 @@ else if ((c & 0xF0) == 0xE0) {
 
 UTF-8 uses the pattern `1110xxxx` for three-byte sequences. The first byte contains four prefix bits (`1110`) and four payload bits. Each of the next two continuation bytes contributes six payload bits.
 
+
+**Example:**
+
+The character `你` is encoded using three bytes in UTF-8:
+
+| Byte Position | Hexadecimal | Binary |
+|---|---|---|
+| First byte | `0xE4` | `11100100` |
+| Second byte | `0xBD` | `10111101` |
+| Third byte | `0xA0` | `10100000` |
+
+At the current iteration, we read the first byte, `0xE4`, from the string and store it in `c`.
+
+Therefore:
+
+```text
+c = 0xE4
+c = 228 (decimal)
+c = 11100100 (binary)
+```
+
+We then use this byte to identify the UTF-8 sequence pattern.
+
 #### Step 1: Identify the three-byte sequence
 
 ```cpp
@@ -658,6 +1368,29 @@ else {
 
 UTF-8 uses the pattern `11110xxx` for four-byte sequences. The first byte contains five prefix bits (`11110`) and three payload bits. Each of the next three continuation bytes contributes six payload bits.
 
+**Example:**
+
+The emoji `😊` is encoded using four bytes in UTF-8:
+
+| Byte Position | Hexadecimal | Binary |
+|---|---|---|
+| First byte | `0xF0` | `11110000` |
+| Second byte | `0x9F` | `10011111` |
+| Third byte | `0x98` | `10011000` |
+| Fourth byte | `0x8A` | `10001010` |
+
+At the current iteration, we read the first byte, `0xF0`, from the string and store it in `c`.
+
+Therefore:
+
+```text
+c = 0xF0
+c = 240 (decimal)
+c = 11110000 (binary)
+```
+
+We then use this byte to identify the UTF-8 sequence pattern.
+
 #### Step 1: Understand why this branch is used
 
 The function reaches this `else` when the byte has not matched any of the preceding cases:
@@ -728,9 +1461,12 @@ len:         4
 | Three bytes | `1110xxxx` | 4 | `0x0F` | 3 |
 | Four bytes | `11110xxx` | 3 | `0x07` | 4 |
 
-The first byte tells the decoder how many bytes belong to the current code point. The appropriate mask extracts the payload bits from that first byte, and `len` tells the inner loop how many continuation bytes must still be processed.
+The first byte tells the decoder how many bytes belong to the current code point. 
 
-**Remember:** At this stage, `cp` usually contains only the initial payload bits. The complete code point is reconstructed in the next loop using left shifts, bitwise OR, and the six payload bits from each continuation byte.
+The appropriate mask extracts the payload bits from that first byte, and `len` tells the inner loop how many continuation bytes must still be processed.
+
+---
+
 ### 7. Reconstruct the Code Point
 
 ```cpp
@@ -743,6 +1479,90 @@ for (size_t j = 1; j < len; j++) {
 After identifying the UTF-8 sequence length and extracting the initial payload bits from the first byte, the function must process the remaining bytes to reconstruct the complete Unicode code point.
 
 UTF-8 continuation bytes follow the pattern `10xxxxxx`. The first two bits identify a continuation byte, while the remaining six bits contain payload data.
+
+### Understanding UTF-8 Continuation Bytes
+
+#### 1. What Is a Continuation Byte?
+
+UTF-8 characters can occupy multiple bytes.
+
+For example, the character `é` is encoded using two bytes:
+
+| Byte Position | Binary |
+|---|---|
+| First byte | `11000011` |
+| Second byte | `10101001` |
+
+The first byte identifies how many bytes belong to the character.
+
+The remaining bytes are called **continuation bytes** because they carry additional data needed to reconstruct the complete Unicode code point.
+
+#### 2. Why Does a Continuation Byte Follow `10xxxxxx`?
+
+Every UTF-8 continuation byte follows this pattern:
+
+```text
+10xxxxxx
+```
+
+Let's break it down:
+
+- `10` → The first two bits identify the byte as a continuation byte.
+- `xxxxxx` → The remaining six bits contain the payload data.
+
+For example, consider the continuation byte `0xA9`:
+
+```text
+10101001
+^^
+10 = Continuation prefix
+
+  ^^^^^^
+  101001 = Payload bits
+```
+
+The byte can be divided into two parts:
+
+| Part | Binary |
+|---|---|
+| Continuation prefix | `10` |
+| Payload bits | `101001` |
+| Complete byte | `10101001` |
+
+#### 3. Why Are These Six Payload Bits Important?
+
+The six payload bits contain the additional data needed to reconstruct the original Unicode code point.
+
+This is why our decoder uses:
+
+```cpp
+static_cast<unsigned char>(s[i + j]) & 0x3F
+```
+
+The hexadecimal mask `0x3F` has the following binary representation:
+
+```text
+0x3F = 00111111
+```
+
+When we perform the bitwise AND operation:
+
+```text
+Continuation byte:  10101001
+Mask (0x3F):        00111111
+                    --------
+AND result:         00101001
+```
+
+The operation clears the first two structural bits (`10`) and preserves the remaining six payload bits.
+
+Therefore:
+
+```text
+Original byte:  10101001
+Payload:        00101001
+```
+
 
 #### Step 1: Understand the inner loop
 
@@ -759,6 +1579,67 @@ This loop processes the continuation bytes belonging to the current UTF-8 sequen
 For example, if `len = 4`, the loop processes `j = 1`, `j = 2`, and `j = 3`. That means it processes the three continuation bytes following the first byte.
 
 The expression `s[i + j]` accesses the byte at the corresponding position in the original string.
+
+### Understanding `i + j` in the Decoder
+
+The expression `s[i + j]` is used to access the next byte in the UTF-8 sequence.
+
+#### 1. Understand `i` and `j`
+
+```cpp
+s[i + j]
+```
+
+- `i` → Starting index of the current UTF-8 sequence.
+- `j` → Offset used to move through the bytes of that sequence.
+- `i + j` → Actual index of the byte we want to access.
+
+#### 2. Example: Character `é`
+
+Its UTF-8 encoding contains two bytes:
+
+| Index | Byte | Binary |
+|---|---|---|
+| 0 | `0xC3` | `11000011` |
+| 1 | `0xA9` | `10101001` |
+
+Suppose:
+
+```cpp
+i = 0;
+len = 2;
+```
+
+Our loop is:
+
+```cpp
+for (size_t j = 1; j < len; j++)
+```
+
+#### 3. Understand How the Index Changes
+
+Since the first byte has already been processed, the loop starts from `j = 1` to access the remaining byte.
+
+| Variable | Value | Meaning |
+|---|---:|---|
+| `i` | 0 | Starting index |
+| `j` | 1 | Offset from the starting index |
+| `i + j` | 1 | Actual index to access |
+
+#### 4. Access the Next Byte
+
+```cpp
+s[i + j]
+```
+
+Substituting the values:
+
+```cpp
+s[0 + 1]
+s[1]
+```
+
+Therefore, we access the second byte, `0xA9`.
 
 #### Step 2: Read the next byte
 
@@ -997,46 +1878,46 @@ chars = [0x0041, 0x1F60A]
 i += len;
 ```
 
-After storing the current code point, the function advances the outer-loop index `i` by the number of bytes used by the current UTF-8 sequence.
+After decoding the current Unicode code point, we advance `i` by the number of bytes used by that sequence.
 
-The variable `len` was determined when the first byte was examined.
+- `i` represents the starting index of the current sequence.
+- `len` represents the number of bytes in that sequence.
 
-| Sequence length | Value of `len` | Index update |
-|---|---:|---|
-| One byte | `1` | `i += 1` |
-| Two bytes | `2` | `i += 2` |
-| Three bytes | `3` | `i += 3` |
-| Four bytes | `4` | `i += 4` |
-
-For example, the UTF-8 encoding of `😊` contains four bytes:
+For example, if `i = 1` and `len = 4`:
 
 ```text
-Index:  0   1   2   3
-Byte:  F0  9F  98  8A
+i = i + len
+i = 1 + 4
+i = 5
 ```
 
-At the start of decoding, `i = 0` and `len = 4`.
+Now `i` points to the next unprocessed byte. If no bytes remain, the outer loop terminates.
 
-After reconstructing and storing the code point:
+After decoding the current Unicode code point, we advance `i` by the number of bytes used by that sequence.
 
-```cpp
-i += len;
-```
-
-becomes:
+**Example:** Consider the string `A😊A`, whose UTF-8 bytes are:
 
 ```text
-i = 0 + 4
-i = 4
+Index:  0    1    2    3    4    5
+Byte:  41   F0   9F   98   8A   41
 ```
 
-If the string contains only these four bytes, `i` now equals `s.size()`, so the outer loop stops.
+**Step-by-step movement:**
 
-If more bytes follow, the next iteration starts at the beginning of the next UTF-8 sequence.
+1. First, `A` is decoded. It uses 1 byte, so `i = 0 + 1 = 1`.
+2. Next, `😊` is decoded. It uses 4 bytes, so `i = 1 + 4 = 5`.
+3. Finally, the second `A` is decoded. It uses 1 byte, so `i = 5 + 1 = 6`.
 
-**Why is this necessary?**
+```text
+i = 0 → Decode A  → i = 1
+i = 1 → Decode 😊 → i = 5
+i = 5 → Decode A  → i = 6
+```
 
-Without advancing by `len`, the decoder could process the same leading byte again. Advancing by the full sequence length ensures that the next iteration starts at the next code point rather than at one of the continuation bytes.
+Now `i` equals `s.size()` (6), so the outer loop terminates.
+
+
+
 
 ---
 
@@ -1086,374 +1967,7 @@ Advance to the next sequence
 Return the vector of code points
 ```
 
-The decoder repeats this process until the entire input string has been processed.
-## Complete Dry Run: Decoding `😊`
 
-The emoji `😊` has the Unicode code point `U+1F60A`. Its UTF-8 encoding consists of four bytes:
-
-```text
-F0 9F 98 8A
-```
-
-The decoder reads the first byte to determine the sequence length, extracts the initial payload bits, and then processes the remaining bytes to reconstruct the complete code point.
-
-### Step 1: Process the First Byte — `F0`
-
-The outer loop starts with:
-
-```text
-i = 0
-s[i] = F0
-```
-
-The current byte is converted to `unsigned char`:
-
-```cpp
-unsigned char c = static_cast<unsigned char>(s[i]);
-```
-
-Therefore:
-
-```text
-c = 0xF0 = 240 = 11110000 (binary)
-```
-
-The function checks the conditions in order.
-
-**Check 1:**
-
-```cpp
-c <= 0x7F
-```
-
-Since `0xF0` is greater than `0x7F`, the condition is false.
-
-**Check 2:**
-
-```cpp
-(c & 0xE0) == 0xC0
-```
-
-```text
-  11110000    (c = F0)
-& 11100000    (0xE0)
------------
-  11100000    (result = E0)
-```
-
-The result `0xE0` is not equal to `0xC0`, so this condition is false.
-
-**Check 3:**
-
-```cpp
-(c & 0xF0) == 0xE0
-```
-
-```text
-  11110000    (c = F0)
-& 11110000    (0xF0)
------------
-  11110000    (result = F0)
-```
-
-The result `0xF0` is not equal to `0xE0`, so this condition is also false.
-
-The function reaches the final `else` branch:
-
-```cpp
-cp = c & 0x07;
-len = 4;
-```
-
-The mask `0x07` is `00000111` in binary.
-
-```text
-  11110000    (c = F0)
-& 00000111    (0x07)
------------
-  00000000
-```
-
-The extracted payload is `0`, so:
-
-```text
-cp  = 0
-len = 4
-i   = 0
-```
-
-**What have we learned?**
-
-The first byte indicates that this is a four-byte sequence. The variable `cp` contains the initial three payload bits, which happen to be zero.
-
-### Step 2: Process the Second Byte — `9F`
-
-The inner loop begins:
-
-```cpp
-for (size_t j = 1; j < len; j++)
-```
-
-Since `len = 4`, the loop processes `j = 1`, `j = 2`, and `j = 3`.
-
-In the first iteration:
-
-```text
-i = 0
-j = 1
-s[i + j] = s[1] = 9F
-```
-
-The byte is read as an unsigned value:
-
-```cpp
-static_cast<unsigned char>(s[i + j])
-```
-
-Its binary representation is:
-
-```text
-9F = 10011111
-```
-
-#### Extract the six payload bits
-
-The expression:
-
-```cpp
-static_cast<unsigned char>(s[i + j]) & 0x3F
-```
-
-uses the mask `0x3F`, which is `00111111` in binary.
-
-```text
-  10011111    (9F)
-& 00111111    (0x3F)
------------
-  00011111    (payload = 1F)
-```
-
-The first two bits are removed, leaving the six payload bits `011111`, represented by `0x1F`.
-
-#### Shift and combine
-
-The code executes:
-
-```cpp
-cp = (cp << 6) | 0x1F;
-```
-
-Before this operation, `cp = 0`.
-
-First, shift left by six positions:
-
-```text
-cp << 6 = 0 << 6 = 0
-```
-
-Then combine with the payload:
-
-```text
-cp = 0 | 0x1F
-cp = 0x1F
-```
-
-The variables now contain:
-
-```text
-cp = 0x1F
-j  = 1
-len = 4
-```
-
-The first continuation byte has been processed.
-
-### Step 3: Process the Third Byte — `98`
-
-At the next iteration, `j` increases to `2`.
-
-```text
-i = 0
-j = 2
-s[i + j] = s[2] = 98
-```
-
-The byte `98` has the binary representation:
-
-```text
-98 = 10011000
-```
-
-#### Extract the six payload bits
-
-```text
-  10011000    (98)
-& 00111111    (0x3F)
------------
-  00011000    (payload = 18)
-```
-
-The extracted payload is `0x18`, or decimal `24`.
-
-#### Shift and combine
-
-The code executes:
-
-```cpp
-cp = (cp << 6) | 0x18;
-```
-
-The current value of `cp` is `0x1F`, or decimal `31`.
-
-First, shift left by six positions:
-
-```text
-cp << 6 = 0x1F × 64
-        = 0x7C0
-```
-
-Shifting by six positions makes room for the next six payload bits.
-
-Now combine the shifted value with `0x18`:
-
-```text
-cp = 0x7C0 | 0x18
-```
-
-In binary:
-
-```text
-  011111000000    (0x7C0)
-| 000000011000    (0x018)
---------------
-  011111011000    (0x7D8)
-```
-
-Therefore:
-
-```text
-cp = 0x7D8
-```
-
-The current code point value now contains the payload bits collected from the first three bytes.
-
-### Step 4: Process the Fourth Byte — `8A`
-
-At the third inner-loop iteration, `j` increases to `3`.
-
-```text
-i = 0
-j = 3
-s[i + j] = s[3] = 8A
-```
-
-The byte `8A` has the binary representation:
-
-```text
-8A = 10001010
-```
-
-#### Extract the six payload bits
-
-```text
-  10001010    (8A)
-& 00111111    (0x3F)
------------
-  00001010    (payload = 0A)
-```
-
-The extracted payload is `0x0A`, or decimal `10`.
-
-#### Shift and combine
-
-The code executes:
-
-```cpp
-cp = (cp << 6) | 0x0A;
-```
-
-The current value is `0x7D8`.
-
-First, shift left by six positions:
-
-```text
-cp << 6 = 0x7D8 × 64
-        = 0x1F600
-```
-
-Now combine the final payload:
-
-```text
-cp = 0x1F600 | 0x0A
-```
-
-In binary:
-
-```text
-  000111110110000000000    (0x1F600)
-| 000000000000000001010    (0x0000A)
------------------------
-  000111110110000001010    (0x1F60A)
-```
-
-Therefore:
-
-```text
-cp = 0x1F60A
-```
-
-The complete Unicode code point has now been reconstructed!
-
-### Step 5: Store the Code Point
-
-Once the inner loop finishes, the function executes:
-
-```cpp
-chars.push_back(cp);
-```
-
-The reconstructed value `0x1F60A` is appended to the vector.
-
-```text
-chars = [0x1F60A]
-```
-
-The vector now contains the decoded code point for `😊`.
-
-### Step 6: Advance to the Next Sequence
-
-The outer loop executes:
-
-```cpp
-i += len;
-```
-
-Since `i = 0` and `len = 4`:
-
-```text
-i = 0 + 4
-i = 4
-```
-
-The input contains four bytes, so `s.size() = 4`. The outer-loop condition `i < s.size()` becomes false, and the loop terminates.
-
-### Step 7: Return the Result
-
-Finally, the function executes:
-
-```cpp
-return chars;
-```
-
-The result contains one Unicode code point:
-
-```text
-UTF-8 bytes:        F0 9F 98 8A
-Unicode code point: U+1F60A
-Vector contents:   [0x1F60A]
-```
-
-The returned vector stores the numerical code point, not the original four UTF-8 bytes.
 
 ------------------------------------------------------------------------
 
@@ -1488,29 +2002,45 @@ public:
 **Space Complexity:** `O(n + m)` for the by-value input strings; sorting
 itself uses implementation-dependent stack space.
 
+---
+
 ### Unicode Follow-up --- Sorting Unicode Code Points
 
 Decode both UTF-8 strings into Unicode code points, sort those code
 points, and compare the resulting sequences. This is the Unicode version
 of the sorting approach.
 
-``` cpp
-bool isAnagramUnicodeSorting(const string& s, const string& t) {
-    vector<char32_t> charsS = decodeUTF8(s);
-    vector<char32_t> charsT = decodeUTF8(t);
+```cpp
+// Step 1: Decode UTF-8 into Unicode code points
 
-    if (charsS.size() != charsT.size())
-        return false;
 
-    sort(charsS.begin(), charsS.end());
-    sort(charsT.begin(), charsT.end());
+// Step 2: Check whether both Unicode strings are anagrams
+class Solution {
+public:
+    bool isAnagram(string s, string t) {
 
-    return charsS == charsT;
-}
+        // Decode both UTF-8 strings into Unicode code points
+        vector<char32_t> charsS = decodeUTF8(s);
+        vector<char32_t> charsT = decodeUTF8(t);
+
+        // Check whether both contain the same number of code points
+        if (charsS.size() != charsT.size()) {
+            return false;
+        }
+
+        // Sort both sequences
+        sort(charsS.begin(), charsS.end());
+        sort(charsT.begin(), charsT.end());
+
+        // Compare the sorted sequences
+        return charsS == charsT;
+    }
+};
 ```
 
 **Time Complexity:** `O(n log n + m log m)` 
 **Space Complexity:** `O(n + m)` 
+
 ------------------------------------------------------------------------
 
 ## 2. Hashing --- Two Hash Maps for Character Frequency Counting
@@ -1566,27 +2096,49 @@ alphabet constraint.
 Decode each string and count every Unicode code point in a separate map.
 Compare the complete maps instead of checking only `'a'` through `'z'`.
 
-``` cpp
-bool isAnagramUnicodeTwoMaps(const string& s, const string& t) {
-    vector<char32_t> charsS = decodeUTF8(s);
-    vector<char32_t> charsT = decodeUTF8(t);
+```cpp
+// Step 1: Decode UTF-8 into Unicode code points
 
-    if (charsS.size() != charsT.size())
-        return false;
+// Step 2: Check whether both Unicode strings are anagrams
+class Solution {
+public:
+    bool isAnagram(string s, string t) {
 
-    unordered_map<char32_t, int> mapS;
-    unordered_map<char32_t, int> mapT;
+        // Decode both UTF-8 strings into Unicode code points
+        vector<char32_t> charsS = decodeUTF8(s);
+        vector<char32_t> charsT = decodeUTF8(t);
 
-    for (char32_t c : charsS)
-        mapS[c]++;
+        // Step 3: Check whether both contain the same number of code points
+        if (charsS.size() != charsT.size()) {
+            return false;
+        }
 
-    for (char32_t c : charsT)
-        mapT[c]++;
+        // Step 4: Create two maps
+        unordered_map<char32_t, int> mapS;
+        unordered_map<char32_t, int> mapT;
 
-    return mapS == mapT;
-}
+        // Step 5: Count Unicode code points in s
+        for (char32_t cp : charsS) {
+            mapS[cp]++;
+        }
+
+        // Step 6: Count Unicode code points in t
+        for (char32_t cp : charsT) {
+            mapT[cp]++;
+        }
+
+        // Step 7: Compare frequencies
+        for (const auto& entry : mapS) {
+            if (entry.second != mapT[entry.first]) {
+                return false;
+            }
+        }
+
+        // Step 8: All frequencies match
+        return true;
+    }
+};
 ```
-
 **Time Complexity:** Expected `O(n + m)`.
 
 **Space Complexity:** `O(n + m)` in the worst case for the decoded
@@ -1648,29 +2200,47 @@ alphabet constraint.
 Keep the same frequency-balancing idea, but decode the UTF-8 strings
 first and use `char32_t` keys.
 
-``` cpp
-bool isAnagramUnicodeSingleMap(const string& s, const string& t) {
-    vector<char32_t> charsS = decodeUTF8(s);
-    vector<char32_t> charsT = decodeUTF8(t);
+```cpp
+// Step 1: Decode UTF-8 into Unicode code points
 
-    if (charsS.size() != charsT.size())
-        return false;
+// Step 2: Check whether both Unicode strings are anagrams
+class Solution {
+public:
+    bool isAnagram(string s, string t) {
 
-    unordered_map<char32_t, int> freq;
+        // Decode both UTF-8 strings into Unicode code points
+        vector<char32_t> charsS = decodeUTF8(s);
+        vector<char32_t> charsT = decodeUTF8(t);
 
-    for (char32_t c : charsS)
-        freq[c]++;
-
-    for (char32_t c : charsT)
-        freq[c]--;
-
-    for (const auto& entry : freq) {
-        if (entry.second != 0)
+        // Step 3: Check whether both contain the same number of code points
+        if (charsS.size() != charsT.size()) {
             return false;
-    }
+        }
 
-    return true;
-}
+        // Step 4: Create one map
+        unordered_map<char32_t, int> freq;
+
+        // Step 5: Count Unicode code points in s
+        for (char32_t cp : charsS) {
+            freq[cp]++;
+        }
+
+        // Step 6: Decrease counts using t
+        for (char32_t cp : charsT) {
+            freq[cp]--;
+        }
+
+        // Step 7: Check whether every count is zero
+        for (auto it = freq.begin(); it != freq.end(); it++) {
+            if (it->second != 0) {
+                return false;
+            }
+        }
+
+        // Step 8: All counts are zero
+        return true;
+    }
+};
 ```
 
 **Time Complexity:** Expected `O(n + m)`.
@@ -1738,31 +2308,44 @@ After decoding both strings, use the same combined-loop idea. The
 boundary checks now apply to the decoded code-point vectors rather than
 UTF-8 bytes.
 
-``` cpp
-bool isAnagramUnicodeOneLoop(const string& s, const string& t) {
-    vector<char32_t> charsS = decodeUTF8(s);
-    vector<char32_t> charsT = decodeUTF8(t);
+```cpp
+// Step 1: Decode UTF-8 into Unicode code points
 
-    if (charsS.size() != charsT.size())
-        return false;
+// Step 2: Check whether both Unicode strings are anagrams
+class Solution {
+public:
+    bool isAnagram(string s, string t) {
 
-    unordered_map<char32_t, int> freq;
+        // Decode both UTF-8 strings into Unicode code points
+        vector<char32_t> charsS = decodeUTF8(s);
+        vector<char32_t> charsT = decodeUTF8(t);
 
-    for (size_t i = 0; i < charsS.size() || i < charsT.size(); i++) {
-        if (i < charsS.size())
-            freq[charsS[i]]++;
+        // Step 3: Create one map
+        unordered_map<char32_t, int> freq;
 
-        if (i < charsT.size())
-            freq[charsT[i]]--;
+        // Step 4: Process both strings in one loop
+        for (size_t i = 0; i < charsS.size() || i < charsT.size(); i++) {
+
+            if (i < charsS.size()) {
+                freq[charsS[i]]++;
+            }
+
+            if (i < charsT.size()) {
+                freq[charsT[i]]--;
+            }
+        }
+
+        // Step 5: Check whether every frequency is zero
+        for (auto entry : freq) {
+            if (entry.second != 0) {
+                return false;
+            }
+        }
+
+        // Step 6: All counts balance
+        return true;
     }
-
-    for (const auto& entry : freq) {
-        if (entry.second != 0)
-            return false;
-    }
-
-    return true;
-}
+};
 ```
 
 **Time Complexity:** Expected `O(n + m)`.
@@ -1869,29 +2452,46 @@ direct array indexed by every possible Unicode code point would be
 wasteful. To preserve the single-counter idea, decode the strings and
 use a map keyed by `char32_t`.
 
-``` cpp
-bool isAnagramUnicodeSingleFrequency(const string& s, const string& t) {
-    vector<char32_t> charsS = decodeUTF8(s);
-    vector<char32_t> charsT = decodeUTF8(t);
+```cpp
+// Step 1: Decode UTF-8 into Unicode code points
 
-    if (charsS.size() != charsT.size())
-        return false;
+// Step 2: Check whether both Unicode strings are anagrams
+class Solution {
+public:
+    bool isAnagram(string s, string t) {
 
-    unordered_map<char32_t, int> freq;
+        // Decode both UTF-8 strings into Unicode code points
+        vector<char32_t> charsS = decodeUTF8(s);
+        vector<char32_t> charsT = decodeUTF8(t);
 
-    for (char32_t c : charsS)
-        freq[c]++;
+        // Step 3: Create one frequency map
+        unordered_map<char32_t, int> freq;
 
-    for (char32_t c : charsT)
-        freq[c]--;
+        // Step 4: Count each Unicode code point in s
+        for (char32_t cp : charsS) {
+            freq[cp]++;
+        }
 
-    for (const auto& entry : freq) {
-        if (entry.second != 0)
-            return false;
+        // Step 5: Decrease the count for each code point in t
+        for (char32_t cp : charsT) {
+            freq[cp]--;
+        }
+
+        // Step 6: Check whether every frequency is zero
+        for (int i = 0; i < 26; i++) {
+            // Not applicable to Unicode: there are not just 26 counters.
+        }
+
+        for (const auto& entry : freq) {
+            if (entry.second != 0) {
+                return false;
+            }
+        }
+
+        // Step 7: All code point counts match
+        return true;
     }
-
-    return true;
-}
+};
 ```
 
 **Time Complexity:** Expected `O(n + m)`.
@@ -1963,25 +2563,48 @@ To adapt the two-array idea, use two maps keyed by Unicode code points.
 Each map stores the frequency of the corresponding code point in one
 string. Compare the complete maps at the end.
 
-``` cpp
-bool isAnagramUnicodeTwoFrequencies(const string& s, const string& t) {
-    vector<char32_t> charsS = decodeUTF8(s);
-    vector<char32_t> charsT = decodeUTF8(t);
+```cpp
+// Step 1: Decode UTF-8 into Unicode code points
 
-    if (charsS.size() != charsT.size())
-        return false;
+// Step 2: Check whether both Unicode strings are anagrams
+class Solution {
+public:
+    bool isAnagram(string s, string t) {
 
-    unordered_map<char32_t, int> freqS;
-    unordered_map<char32_t, int> freqT;
+        // Decode both UTF-8 strings into Unicode code points
+        vector<char32_t> charsS = decodeUTF8(s);
+        vector<char32_t> charsT = decodeUTF8(t);
 
-    for (char32_t c : charsS)
-        freqS[c]++;
+        // Step 3: Check if the number of code points is different
+        if (charsS.size() != charsT.size()) {
+            return false;
+        }
 
-    for (char32_t c : charsT)
-        freqT[c]++;
+        // Step 4: Create separate frequency maps
+        unordered_map<char32_t, int> freqS;
+        unordered_map<char32_t, int> freqT;
 
-    return freqS == freqT;
-}
+        // Step 5: Count code points in s
+        for (char32_t cp : charsS) {
+            freqS[cp]++;
+        }
+
+        // Step 6: Count code points in t
+        for (char32_t cp : charsT) {
+            freqT[cp]++;
+        }
+
+        // Step 7: Compare all frequencies
+        for (const auto& entry : freqS) {
+            if (entry.second != freqT[entry.first]) {
+                return false;
+            }
+        }
+
+        // Step 8: All frequencies match
+        return true;
+    }
+};
 ```
 
 **Time Complexity:** Expected `O(n + m)`.
@@ -2232,28 +2855,43 @@ To adapt this approach, decode both strings into code points and count
 them using a map. This keeps the simultaneous increment/decrement idea
 while changing the key from a byte value to a Unicode code point.
 
-``` cpp
-bool isAnagramUnicodeByteArrayAlternative(const string& s, const string& t) {
-    vector<char32_t> charsS = decodeUTF8(s);
-    vector<char32_t> charsT = decodeUTF8(t);
+```cpp
+// Step 1: Decode UTF-8 into Unicode code points
 
-    if (charsS.size() != charsT.size())
-        return false;
+// Step 2: Check whether both Unicode strings are anagrams
+class Solution {
+public:
+    bool isAnagram(string s, string t) {
 
-    unordered_map<char32_t, int> freq;
+        // Decode both UTF-8 strings into Unicode code points
+        vector<char32_t> charsS = decodeUTF8(s);
+        vector<char32_t> charsT = decodeUTF8(t);
 
-    for (size_t i = 0; i < charsS.size(); i++) {
-        freq[charsS[i]]++;
-        freq[charsT[i]]--;
-    }
-
-    for (const auto& entry : freq) {
-        if (entry.second != 0)
+        // Step 3: Check if the number of code points is different
+        if (charsS.size() != charsT.size()) {
             return false;
-    }
+        }
 
-    return true;
-}
+        // Step 4: Create one frequency map
+        unordered_map<char32_t, int> freq;
+
+        // Step 5: Count code points in s and decrease counts using t
+        for (size_t i = 0; i < charsS.size(); i++) {
+            freq[charsS[i]]++;
+            freq[charsT[i]]--;
+        }
+
+        // Step 6: Check whether every frequency is zero
+        for (const auto& entry : freq) {
+            if (entry.second != 0) {
+                return false;
+            }
+        }
+
+        // Step 7: All code point frequencies balance
+        return true;
+    }
+};
 ```
 
 **Time Complexity:** Expected `O(n + m)`.
@@ -2268,4 +2906,4 @@ enjoy exploring the approaches. ❤️
 
 If you found it helpful, please **⬆️ upvote and leave a comment!** 💬
 
-`<img src="https://assets.leetcode.com/users/images/5ce11bf6-0db9-4239-bbb9-dfe5d76443f3_1666346629.9681695.gif" alt="LeetCode GIF" width="400">`{=html}
+<img src="https://assets.leetcode.com/users/images/5ce11bf6-0db9-4239-bbb9-dfe5d76443f3_1666346629.9681695.gif" alt="LeetCode GIF" width="400">
