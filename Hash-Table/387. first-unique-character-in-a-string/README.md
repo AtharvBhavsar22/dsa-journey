@@ -1,29 +1,20 @@
-# 387. First Unique Character in a String
+Explored multiple approaches, from brute force to optimized solutions, along with alternative LeetCode solutions.
 
-**LeetCode Problem:** [First Unique Character in a String](https://leetcode.com/problems/first-unique-character-in-a-string/)  
-**Difficulty:** Easy  
-**Topics:** Hash Table, String, Counting, Queue
-
-Given a string `s`, return the index of its first non-repeating character.
-Return `-1` if every character repeats. The input contains lowercase
-English letters.
-
-Each approach below is also available as a standalone `.cpp` file in this
-folder.
+Kept everything short and simple. Have a look, learn along, and give it a try yourself!
 
 ---
 
-## 1. Brute Force — Compare Every Pair
+## 01. Brute Force – Nested Loop Character Comparison
 
-**Filename:** `01. brute-force.cpp`
+**Approach:** Traverse the string using an outer loop and check each character against every other character using an inner loop.
 
-For each character, scan the entire string to see whether it appears at
-any other position. Return the first index that has no duplicate.
+For every character `s[i]`, compare it with all other characters in the string. Skip the current index using `i != j`.
+
+If a matching character is found, mark it as not unique and stop checking. If no duplicate is found, return the current index because it is the first unique character.
+
+If no unique character exists, return `-1`.
 
 ```cpp
-#include <bits/stdc++.h>
-using namespace std;
-
 class Solution {
 public:
     int firstUniqChar(string s) {
@@ -32,6 +23,7 @@ public:
         for (int i = 0; i < n; i++) {
             bool isUnique = true;
 
+            // Check all other characters
             for (int j = 0; j < n; j++) {
                 if (i != j && s[i] == s[j]) {
                     isUnique = false;
@@ -49,32 +41,34 @@ public:
 };
 ```
 
-**Time Complexity:** `O(n²)`  
-**Space Complexity:** `O(1)` extra space.
+**Time Complexity:** `O(n²)`
+
+**Space Complexity:** `O(1)`
 
 ---
 
-## 2. Hash Map — Count, Then Find
+## 02. Hash Map – Character Frequency Counting
 
-**Filename:** `02. hash-map.cpp`
+**Approach:** Use an `unordered_map<char, int>` to store the frequency of each character in the string.
 
-Count the occurrences of each character in an `unordered_map`. Scan the
-string again and return the first index whose character has a count of
-one.
+First, traverse the string and increment the frequency of each character using `freq[s[i]]++`.
+
+After counting all characters, traverse the string again from left to right. If the frequency of the current character is `1`, return its index because it is the first unique character.
+
+If no character has a frequency of `1`, return `-1`.
 
 ```cpp
-#include <bits/stdc++.h>
-using namespace std;
-
 class Solution {
 public:
     int firstUniqChar(string s) {
         unordered_map<char, int> freq;
 
+        // Step 1: Count the frequency of each character
         for (int i = 0; i < s.length(); i++) {
             freq[s[i]]++;
         }
 
+        // Step 2: Find the first character with frequency 1
         for (int i = 0; i < s.length(); i++) {
             if (freq[s[i]] == 1) {
                 return i;
@@ -86,33 +80,34 @@ public:
 };
 ```
 
-**Time Complexity:** Expected `O(n)`  
-**Space Complexity:** `O(k)`, where `k` is the number of distinct
-characters.
+**Time Complexity:** `O(n)`
+
+**Space Complexity:** `O(k)`
 
 ---
 
-## 3. Frequency Array — Count, Then Find
+## 03. Frequency Array – Character Frequency Counting
 
-**Filename:** `03. frequency-array.cpp`
+**Approach:** Use a frequency array of size `26` to store the frequency of each lowercase English letter.
 
-Because the input contains only lowercase English letters, use a
-26-element array to count each character. Scan the string again to find
-the first character with a frequency of one.
+First, initialize the array with zeros. Traverse the string and increment the frequency of each character using `freq[s[i] - 'a']++`. Subtracting `'a'` maps each lowercase letter to an index between `0` and `25`.
+
+After counting all characters, traverse the string again from left to right. If the frequency of the current character is `1`, return its index because it is the first unique character.
+
+If no character has a frequency of `1`, return `-1`.
 
 ```cpp
-#include <bits/stdc++.h>
-using namespace std;
-
 class Solution {
 public:
     int firstUniqChar(string s) {
         int freq[26] = {0};
 
+        // Step 1: Count character frequencies
         for (int i = 0; i < s.length(); i++) {
             freq[s[i] - 'a']++;
         }
 
+        // Step 2: Find the first unique character
         for (int i = 0; i < s.length(); i++) {
             if (freq[s[i] - 'a'] == 1) {
                 return i;
@@ -124,24 +119,25 @@ public:
 };
 ```
 
-**Time Complexity:** `O(n)`  
-**Space Complexity:** `O(1)` — the array always contains 26 counters.
+**Time Complexity:** `O(n)` 
+
+**Space Complexity:** `O(1)` 
 
 ---
 
-## 4. Hash Map and Queue — Track Current Unique Candidate
+## 04. Hash Map + Queue – Tracking First Unique Character
 
-**Filename:** `04. hash-map-queue.cpp`
+**Approach:** Use an `unordered_map<char, int>` to maintain the frequency of each character and a `queue<pair<char, int>>` to store characters along with their original indices.
 
-Count characters as they are read and enqueue each character with its
-index. Remove characters from the front while their frequency is greater
-than one. The queue's front is the earliest character that has appeared
-exactly once; if the queue is empty, no unique character exists.
+Traverse the string from left to right. For every character, increment its frequency in the hash map and insert the character with its index into the queue.
+
+After inserting each character, check the front of the queue using a `while` loop. If the frequency of the front character is greater than `1`, remove it using `q.pop()` because it is no longer unique.
+
+Continue removing repeated characters until the queue becomes empty or its front contains a character with frequency `1`.
+
+After processing the entire string, the front of the queue contains the first unique character. Return its index using `q.front().second`. If the queue is empty, return `-1`.
 
 ```cpp
-#include <bits/stdc++.h>
-using namespace std;
-
 class Solution {
 public:
     int firstUniqChar(string s) {
@@ -150,8 +146,11 @@ public:
 
         for (int i = 0; i < s.length(); i++) {
             freq[s[i]]++;
+
+            // Add the character and its index
             q.push({s[i], i});
 
+            // Remove repeated characters from the front
             while (!q.empty() && freq[q.front().first] > 1) {
                 q.pop();
             }
@@ -166,24 +165,25 @@ public:
 };
 ```
 
-**Time Complexity:** Expected `O(n)` — each character is enqueued and
-dequeued at most once.  
-**Space Complexity:** `O(n)` for the queue and frequency map.
+**Time Complexity:** `O(n)` 
+
+**Space Complexity:** `O(n)` 
 
 ---
 
-## 5. Frequency Array — Store First Index
+## 05. Frequency Array – Frequency and First Occurrence Tracking
 
-**Filename:** `05. frequency-array-first-index.cpp`
+**Approach:** Use two frequency arrays of size `26` to store the frequency and first occurrence index of each lowercase English letter.
 
-Track both the frequency and first index for every lowercase letter.
-After counting, inspect the 26 letters and select the smallest first
-index among characters that occur exactly once.
+Initialize `freq` with zeros and `firstIndex` with `-1` to indicate that no character has been encountered yet.
+
+Traverse the string and calculate the array index using `s[i] - 'a'`. Increment the character's frequency and store its index in `firstIndex` only when it appears for the first time.
+
+After processing the string, traverse all `26` array positions. For every character whose frequency is `1`, update `result` with the smallest first occurrence index using `min()`.
+
+Finally, return `result`. If no unique character is found, return `-1`.
 
 ```cpp
-#include <bits/stdc++.h>
-using namespace std;
-
 class Solution {
 public:
     int firstUniqChar(string s) {
@@ -192,6 +192,7 @@ public:
 
         fill(firstIndex, firstIndex + 26, -1);
 
+        // Step 1: Store frequency and first occurrence
         for (int i = 0; i < s.length(); i++) {
             int index = s[i] - 'a';
 
@@ -202,6 +203,7 @@ public:
             }
         }
 
+        // Step 2: Find the smallest index with frequency 1
         int result = s.length();
 
         for (int i = 0; i < 26; i++) {
@@ -215,5 +217,15 @@ public:
 };
 ```
 
-**Time Complexity:** `O(n + 26)`, which is `O(n)`  
-**Space Complexity:** `O(1)` — two arrays of 26 elements.
+**Time Complexity:** `O(n)` 
+
+**Space Complexity:** `O(1)` 
+
+---
+
+Thank you for taking the time to read this. Hope you find it helpful and enjoy exploring the approaches. ❤️
+
+If you found it helpful, please **⬆️ upvote and leave a comment!** 💬
+
+<img src="https://assets.leetcode.com/users/images/5ce11bf6-0db9-4239-bbb9-dfe5d76443f3_1666346629.9681695.gif" alt="LeetCode GIF" width="400">
+
