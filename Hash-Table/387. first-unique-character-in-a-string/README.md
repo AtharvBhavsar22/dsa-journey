@@ -1,3 +1,9 @@
+# 383. Ransom Note
+
+**LeetCode Problem:** [Ransom Note](https://leetcode.com/problems/ransom-note/)  
+**Difficulty:** Easy  
+**Topics:** Hash Table, String, Counting, Sorting, Two Pointers
+
 Explored multiple approaches, from brute force to optimized solutions, along with alternative LeetCode solutions.
 
 Kept everything short and simple. Have a look, learn along, and give it a try yourself!
