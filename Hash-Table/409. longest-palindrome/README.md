@@ -1,3 +1,9 @@
+# 387. First Unique Character in a String
+
+**LeetCode Problem:** [First Unique Character in a String](https://leetcode.com/problems/first-unique-character-in-a-string/)  
+**Difficulty:** Easy  
+**Topics:** Hash Table, String, Queue, Counting
+
 Explored multiple approaches, from brute force to optimized solutions, along with alternative LeetCode solutions.
 
 Kept everything short and simple. Have a look, learn along, and give it a try yourself!
