@@ -1,3 +1,9 @@
+# 229. Majority Element II
+
+**LeetCode Problem:** [Majority Element II](https://leetcode.com/problems/majority-element-ii/)  
+**Difficulty:** Medium  
+**Topics:** Array, Hash Table, Sorting, Counting
+
 Explored multiple approaches, from brute force to optimized solutions, along with alternative LeetCode solutions.
 
 Kept everything short and simple. Have a look, learn along, and give it a try yourself!
