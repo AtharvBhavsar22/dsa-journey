@@ -1,3 +1,9 @@
+# 205. Isomorphic Strings
+
+**LeetCode Problem:** [Isomorphic Strings](https://leetcode.com/problems/isomorphic-strings/)  
+**Difficulty:** Easy  
+**Topics:** Hash Table, String
+
 Explored multiple approaches, from comparing character patterns to using hash maps and optimized array mappings.
 
 Kept everything short and simple. Have a look, learn along, and give it a try yourself!
