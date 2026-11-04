@@ -1,96 +1,102 @@
-# 290. Word Pattern
-
-**LeetCode Problem:** [Word Pattern](https://leetcode.com/problems/word-pattern/)  
-**Difficulty:** Easy  
-**Topics:** Hash Table, String, Two Pointers
-
-Explored multiple approaches, from brute force to optimized solutions, along with alternative LeetCode solutions.
+Explored multiple approaches, from comparing character patterns to using hash maps and optimized array mappings.
 
 Kept everything short and simple. Have a look, learn along, and give it a try yourself!
 
 ---
 
-## 1. Hash Maps — Bidirectional Mapping
+## 01. Brute Force – Pairwise Character Comparison
 
 **Approach:**
 
-First, we create two `unordered_map` containers to maintain mappings between pattern characters and words.
+First, find the length of the string and use two nested loops to compare every possible pair of characters.
 
-- `mp1` stores the mapping from characters in `pattern` to words in `s`.
-- `mp2` stores the reverse mapping from words in `s` to characters in `pattern`.
+The outer loop selects a character at index `i`, while the inner loop starts from `i + 1` and compares it with every character that comes after it.
 
-We use `stringstream` to extract words from the string `s` one by one using `ss >> word`.
+For each pair of positions, check whether `s[i]` is equal to `s[j]` and whether `t[i]` is equal to `t[j]`. 
 
-We traverse the pattern using a single loop. Before processing each character, we check whether a corresponding word is available. If no word is available, we return `false`.
+Both comparisons should produce the same result. This means that if two characters are equal in string `s`, their corresponding characters must also be equal in string `t`. Similarly, if they are different in `s`, they must be different in `t`.
 
-For every character and word pair, we perform two checks:
-
-**Forward Mapping:**
-
-We use `mp1.find(ch)` to check whether the current pattern character has already been mapped.
-
-If it exists, we compare its previously stored word with the current word. If they are different, we return `false`.
-
-**Reverse Mapping:**
-
-We use `mp2.find(word)` to check whether the current word has already been assigned to another pattern character.
-
-If it exists and its stored character differs from `ch`, we return `false`.
-
-**Store Both Mappings:**
-
-If both checks pass, we store the mappings:
-
-- `mp1[ch] = word`
-- `mp2[word] = ch`
-
-After traversing the pattern, we check whether any extra words remain in the string. If an extra word exists, we return `false`.
-
-Otherwise, we return `true`.
+The condition `(s[i] == s[j]) != (t[i] == t[j])` checks whether these two comparison results are different. If they are, the character patterns do not match, so return `false`. If every pair satisfies the same equality relationship, return `true`, meaning both strings are isomorphic.
 
 **Code:**
 
 ```cpp
 class Solution {
 public:
-    bool wordPattern(string pattern, string s) {
+    bool isIsomorphic(string s, string t) {
 
-        unordered_map<char, string> mp1;
-        unordered_map<string, char> mp2;
+        int n = s.length();
 
-        stringstream ss(s);
-        string word;
+        for (int i = 0; i < n; i++) {
 
-        for (int i = 0; i < pattern.length(); i++) {
+            for (int j = i + 1; j < n; j++) {
 
-            if (!(ss >> word)) {
-                return false;
+                if ((s[i] == s[j]) != (t[i] == t[j])) {
+                    return false;
+                }
+
             }
+        }
 
-            char ch = pattern[i];
+        return true;
+    }
+};
+```
+
+**Time Complexity:** `O(n²)` — Every pair of positions is compared.
+
+**Space Complexity:** `O(1)` — No additional data structures are used.
+
+---
+
+## 02. Hash Map + Reverse Hash Map
+
+**Approach:**
+
+Use two hash maps to maintain mappings in both directions.
+
+- `mp1` stores the mapping from characters in `s` to characters in `t`.
+- `mp2` stores the reverse mapping from characters in `t` to characters in `s`.
+- Traverse both strings simultaneously.
+- Check whether the current character from `s` already has a mapping. If it does, verify that it maps to the current character in `t`.
+- Similarly, check whether the current character from `t` already maps back to the current character in `s`.
+- If either mapping conflicts, return `false`.
+- Otherwise, store both mappings.
+
+Maintaining mappings in both directions ensures that every character has a unique corresponding character.
+
+**Code:**
+
+```cpp
+class Solution {
+public:
+    bool isIsomorphic(string s, string t) {
+
+        unordered_map<char, char> mp1;
+        unordered_map<char, char> mp2;
+
+        for (int i = 0; i < s.length(); i++) {
+
+            char ch1 = s[i];
+            char ch2 = t[i];
 
             // Check forward mapping
-            if (mp1.find(ch) != mp1.end()) {
-                if (mp1[ch] != word) {
+            if (mp1.find(ch1) != mp1.end()) {
+                if (mp1[ch1] != ch2) {
                     return false;
                 }
             }
 
             // Check reverse mapping
-            if (mp2.find(word) != mp2.end()) {
-                if (mp2[word] != ch) {
+            if (mp2.find(ch2) != mp2.end()) {
+                if (mp2[ch2] != ch1) {
                     return false;
                 }
             }
 
             // Store both mappings
-            mp1[ch] = word;
-            mp2[word] = ch;
-        }
-
-        // Check for extra words
-        if (ss >> word) {
-            return false;
+            mp1[ch1] = ch2;
+            mp2[ch2] = ch1;
         }
 
         return true;
@@ -98,164 +104,59 @@ public:
 };
 ```
 
-**Time Complexity:** `O(n + L)` 
+**Time Complexity:** `O(n)` 
 
-**Space Complexity:** `O(k + u)` 
+**Space Complexity:** `O(1)` 
 
 ---
 
-## 2. Brute Force — Nested Loops
+## 03. Hash Map + Hash Set
 
 **Approach:**
 
-First, we create a `vector<string>` called `words` to store all the words extracted from the string `s`.
+Use one hash map and one hash set to maintain the character mapping and track already-used characters.
 
-We use `stringstream` to extract each word and insert it into the vector using `push_back()`.
+- `mp` stores the mapping from characters in `s` to characters in `t`.
+- `used` keeps track of characters in `t` that have already been assigned.
+- Traverse both strings simultaneously.
+- If the current character from `s` already exists in the map, check whether its mapped character matches the current character from `t`.
+- Otherwise, check whether the current character from `t` is already present in `used`.
+- If it is already used, another character from `s` is trying to map to the same character, so return `false`.
+- If it is unused, store the mapping and insert the character into the set.
 
-Before comparing the characters and words, we check whether the number of extracted words matches the length of the pattern.
-
-If the sizes are different, we return `false` because every pattern character must correspond to exactly one word.
-
-Next, we use two nested loops to compare every pair of positions.
-
-For every pair of indices `i` and `j`, we compare two conditions:
-
-- `pattern[i] == pattern[j]` checks whether both positions contain the same pattern character.
-- `words[i] == words[j]` checks whether both positions contain the same word.
-
-We combine these conditions using the `!=` operator:
-
-`(pattern[i] == pattern[j]) != (words[i] == words[j])`
-
-If the results are different, the relationship between the pattern characters and words is inconsistent, so we return `false`.
-
-If all pairs satisfy the condition, we return `true`.
+This ensures that each character in `s` maps consistently and each character in `t` is used by only one character from `s`.
 
 **Code:**
 
 ```cpp
 class Solution {
 public:
-    bool wordPattern(string pattern, string s) {
+    bool isIsomorphic(string s, string t) {
 
-        vector<string> words;
-        stringstream ss(s);
-        string word;
+        unordered_map<char, char> mp;
+        unordered_set<char> used;
 
-        // Step 1: Extract all words
-        while (ss >> word) {
-            words.push_back(word);
-        }
+        for (int i = 0; i < s.length(); i++) {
 
-        // Step 2: Check the number of words
-        if (words.size() != pattern.length()) {
-            return false;
-        }
+            char ch1 = s[i];
+            char ch2 = t[i];
 
-        // Step 3: Compare every pair of positions
-        for (int i = 0; i < pattern.length(); i++) {
+            if (mp.find(ch1) != mp.end()) {
 
-            for (int j = i + 1; j < pattern.length(); j++) {
-
-                if ((pattern[i] == pattern[j]) != (words[i] == words[j])) {
-                    return false;
-                }
-            }
-        }
-
-        return true;
-    }
-};
-```
-
-**Time Complexity:** `O(n² + L)` 
-
-**Space Complexity:** `O(n + L)` 
-
----
-
-## 3. Hash Map + Hash Set — Forward Mapping
-
-**Approach:**
-
-First, we create an `unordered_map<char, string>` called `mp` to store mappings from pattern characters to words.
-
-We also create an `unordered_set<string>` called `used` to track words that have already been assigned.
-
-We use `stringstream` to extract words one by one and traverse the pattern using a single loop.
-
-For every character and word pair, we perform two checks:
-
-**Check Existing Mapping:**
-
-We use `mp.find(ch)` to check whether the current pattern character already exists in the map.
-
-If it exists, we compare its previously stored word with the current word.
-
-If they are different, we return `false` because the same pattern character cannot map to different words.
-
-**Check Used Words:**
-
-If the current pattern character does not exist in the map, we check whether the current word already exists in the `used` set.
-
-If it exists, another pattern character has already been assigned to that word, so we return `false`.
-
-**Store the Mapping:**
-
-If the pattern character is new and the word has not been used, we store the mapping:
-
-- `mp[ch] = word` stores the forward mapping.
-- `used.insert(word)` marks the word as already assigned.
-
-After processing all pattern characters, we check whether any extra words remain.
-
-If no extra words or invalid mappings are found, we return `true`.
-
-**Code:**
-
-```cpp
-class Solution {
-public:
-    bool wordPattern(string pattern, string s) {
-
-        unordered_map<char, string> mp;
-        unordered_set<string> used;
-
-        stringstream ss(s);
-        string word;
-
-        for (int i = 0; i < pattern.length(); i++) {
-
-            if (!(ss >> word)) {
-                return false;
-            }
-
-            char ch = pattern[i];
-
-            // Check existing mapping
-            if (mp.find(ch) != mp.end()) {
-
-                if (mp[ch] != word) {
+                if (mp[ch1] != ch2) {
                     return false;
                 }
 
             }
             else {
 
-                // Check whether the word is already used
-                if (used.find(word) != used.end()) {
+                if (used.find(ch2) != used.end()) {
                     return false;
                 }
 
-                // Store the mapping
-                mp[ch] = word;
-                used.insert(word);
+                mp[ch1] = ch2;
+                used.insert(ch2);
             }
-        }
-
-        // Check for extra words
-        if (ss >> word) {
-            return false;
         }
 
         return true;
@@ -263,90 +164,58 @@ public:
 };
 ```
 
-**Time Complexity:** `O(n + L)` 
+**Time Complexity:** `O(n)` 
 
-**Space Complexity:** `O(k + u)`
+**Space Complexity:** `O(1)`
 
 ---
 
-## 4. Last Seen Index — Array + Hash Map
+## 04. Two Fixed-Size Arrays – Bidirectional Mapping
 
 **Approach:**
 
-Instead of maintaining separate forward and reverse mappings, we use the last seen index of each pattern character and word.
+Instead of using hash maps, use two fixed-size arrays to store character mappings.
 
-First, we create:
+- `mapST` stores mappings from characters in `s` to characters in `t`.
+- `mapTS` stores mappings from characters in `t` to characters in `s`.
+- Initialize both arrays with `-1`, indicating that no mapping has been assigned yet.
+- Traverse both strings simultaneously.
+- Convert each character into its ASCII index.
+- Check whether the current character already has a mapping. If it does, verify that the mapping matches the current corresponding character.
+- Perform the same check in the reverse mapping array.
+- If either mapping conflicts, return `false`.
+- Otherwise, store both mappings using their ASCII indices.
 
-- `lastPattern[26]` to store the last seen index of each lowercase pattern character.
-- `lastWord` to store the last seen index of each word.
-
-We initialize the array with `0`. Since we store `i + 1` as the index, `0` represents a character or word that has not been encountered yet.
-
-We traverse the pattern using a single loop and extract the corresponding word using `stringstream`.
-
-If a word is unavailable, we return `false`.
-
-We convert the current pattern character into an array index using:
-
-`int ch = pattern[i] - 'a';`
-
-**Check Last Seen Indices:**
-
-We compare:
-
-`lastPattern[ch] != lastWord[word]`
-
-If the values are different, the pattern character and word have different occurrence histories, so the mapping is inconsistent. We return `false`.
-
-If both values are equal, their previous occurrence patterns match.
-
-**Update Last Seen Indices:**
-
-After the comparison, we update both containers:
-
-- `lastPattern[ch] = i + 1`
-- `lastWord[word] = i + 1`
-
-This ensures that both the pattern character and word store the same most recent position.
-
-After processing the entire pattern, we check whether any extra words remain. If they do, we return `false`.
-
-Otherwise, we return `true`.
+Since the arrays are initialized with `-1`, we can directly check whether a mapping exists without using `find()`.
 
 **Code:**
 
 ```cpp
 class Solution {
 public:
-    bool wordPattern(string pattern, string s) {
+    bool isIsomorphic(string s, string t) {
 
-        int lastPattern[26] = {0};
-        unordered_map<string, int> lastWord;
+        int mapST[128];
+        int mapTS[128];
 
-        stringstream ss(s);
-        string word;
+        fill(mapST, mapST + 128, -1);
+        fill(mapTS, mapTS + 128, -1);
 
-        for (int i = 0; i < pattern.length(); i++) {
+        for (int i = 0; i < s.length(); i++) {
 
-            if (!(ss >> word)) {
+            int ch1 = s[i];
+            int ch2 = t[i];
+
+            if (mapST[ch1] != -1 && mapST[ch1] != ch2) {
                 return false;
             }
 
-            int ch = pattern[i] - 'a';
-
-            // Check whether both were last seen at the same index
-            if (lastPattern[ch] != lastWord[word]) {
+            if (mapTS[ch2] != -1 && mapTS[ch2] != ch1) {
                 return false;
             }
 
-            // Update last seen indices
-            lastPattern[ch] = i + 1;
-            lastWord[word] = i + 1;
-        }
-
-        // Check for extra words
-        if (ss >> word) {
-            return false;
+            mapST[ch1] = ch2;
+            mapTS[ch2] = ch1;
         }
 
         return true;
@@ -354,9 +223,9 @@ public:
 };
 ```
 
-**Time Complexity:** `O(n + L)`
+**Time Complexity:** `O(n)` 
 
-**Space Complexity:** `O(u + 1)` 
+**Space Complexity:** `O(1)` 
 
 ---
 
